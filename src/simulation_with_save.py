@@ -219,7 +219,7 @@ class Simulate(object):
         plt.ylabel(' Coerência ')
         plt.legend(loc=0)
         plt.savefig(f'noMarkov/figures/automatic/{self.map_name}.png')
-        #plt.show()
+        plt.show()
 
     def plots2(self, list_p, coerencias_L):
         fig, ax = plt.subplots()
@@ -327,7 +327,7 @@ class Simulate(object):
     def run_calcs_noMarkov(self, save, theta, phi):#, gamma=None):
         #coerencias_R = []
         coerencias_L = []
-        self.list_p = get_list_p_noMarkov(self.list_p,'Ana')
+        # self.list_p = get_list_p_noMarkov(self.list_p,'Ana')
         print('list_t = ', self.list_p)
         #self.list_p = [i/max(self.list_p) for i in self.list_p]
         pretrain = True
@@ -380,16 +380,16 @@ class Simulate(object):
 def main():
     n_qubits = 2
     d_rho_A = 2
-    list_p = np.linspace(0.001,60,21)
-    epochs = 120
-    step_to_start = 80
-    rho_AB = QCH.rho_AB_pf
-    S = Simulate('pf', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
+    list_p = np.linspace(0.001,1,5)
+    epochs = 1
+    step_to_start = 1
+    rho_AB = QCH.rho_AB_ad
+    S = Simulate('ad', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
     #list_p = S.get_list_p_noMarkov()
     # print(list_p)
     # print(type(list_p))
-    S.run_calcs_noMarkov(True, pi/2, 0)
-    #S.run_calcs(True, pi/2, 0)
+    # S.run_calcs_noMarkov(True, pi/2, 0)
+    S.run_calcs(False, pi/2, 0)
     
     #phis = [0,pi,pi/1.5,pi/2,pi/3,pi/4,pi/5]
     #S.run_sequential_bf(phis)
