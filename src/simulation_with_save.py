@@ -324,7 +324,7 @@ class Simulate(object):
         self.plot_theoric_map(theta, phi)
         self.plots(self.list_p, self.coerencias_L)
     
-    def run_calcs_noMarkov(self, save, theta, phi):#, gamma=None):
+    def     run_calcs_noMarkov(self, save, theta, phi):#, gamma=None):
         #coerencias_R = []
         coerencias_L = []
         # self.list_p = get_list_p_noMarkov(self.list_p,'Ana')
@@ -388,7 +388,7 @@ def main():
     #list_p = S.get_list_p_noMarkov()
     # print(list_p)
     # print(type(list_p))
-    # S.run_calcs_noMarkov(True, pi/2, 0)
+    S.run_calcs_noMarkov(True, pi/2, 0)
     S.run_calcs(False, pi/2, 0)
     
     #phis = [0,pi,pi/1.5,pi/2,pi/3,pi/4,pi/5]
