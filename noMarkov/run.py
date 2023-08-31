@@ -51,7 +51,7 @@ def RHO_t_NM(state,J):
     tp2 = TP(K_1(J),K_0(J))
     return tp1*proj(state)*tp1.T + tp2*proj(state)*tp2.T
 
-def calculate_entanglement(rho):
+def calculate_entanglement_old(rho):
     # Compute the spin-flipped counterpart
     sigma_y = Matrix([[0, -1j], [1j, 0]])
     rho_tilde = np.kron(sigma_y, sigma_y) @ np.conj(rho.T) @ np.kron(sigma_y, sigma_y)
@@ -68,8 +68,59 @@ def calculate_entanglement(rho):
 
     return entanglement
 
-# Função para calcular o emaranhamento
+
+def is_numeric_matrix(matrix):
+    """Check if the given matrix is numeric."""
+    if not isinstance(matrix, (np.ndarray, np.matrix)):
+        return False
+    if not np.issubdtype(matrix.dtype, np.number):
+        return False
+    return True
+
+def is_hermitian(matrix):
+    """Check if the given matrix is Hermitian (self-adjoint)."""
+    return np.allclose(matrix, matrix.conj().T)
+
+def has_non_numeric_values(matrix):
+    """Check if the given matrix has non-numeric values."""
+    return np.any(np.isnan(matrix)) or np.any(np.isinf(matrix))
+
 def calculate_entanglement2(rho):
+    """Calculates the von Neumann entropy of a quantum state using the alternative formula.
+    
+    Parameters:
+    rho (array-like or Matrix): Density operator of the quantum state.
+    
+    Returns:
+    float: Von Neumann entropy calculated using the alternative formula.
+    """
+    rho_array = np.array(rho)  # Convert to NumPy array
+    
+    #if not is_numeric_matrix(rho_array) or has_non_numeric_values(rho_array):
+    #    raise ValueError("The input matrix must be numeric and free of non-numeric values.")
+    
+    #if not is_hermitian(rho_array):
+    #    raise ValueError("The input matrix must be Hermitian (self-adjoint).")
+    
+    # Construct the spin-flipped counterpart of rho
+    sigma_y = np.array([[0, -1j], [1j, 0]])
+    rho_tilde = np.kron(sigma_y, sigma_y) @ rho_array.conj().T @ np.kron(sigma_y, sigma_y)
+    
+    # Calculate the eigenvalues of rho_tilde
+    eigenvalues = np.linalg.eigvalsh(rho_tilde)
+    
+    # Sort the eigenvalues in descending order
+    eigenvalues_sorted = np.sort(eigenvalues)[::-1]
+    
+    # Calculate the alternative von Neumann entropy formula
+    entropy = max(0, np.sqrt(eigenvalues_sorted[0]) - np.sqrt(eigenvalues_sorted[1]) -
+                   np.sqrt(eigenvalues_sorted[2]) - np.sqrt(eigenvalues_sorted[3]))
+    
+    return entropy
+
+
+# Função para calcular o emaranhamento
+def calculate_entanglement(rho):
     rho_sqrt = rho.applyfunc(sympify)  # Convert all matrix elements to sympy expressions
     eigenvalues = rho_sqrt.eigenvals()  # Calculate eigenvalues using SymPy's eigenvals method
 
@@ -91,7 +142,7 @@ def calculate_entanglement2(rho):
 
 def get_list_p_noMarkov(list_p, type):
     lamb = 0.01
-    gamma_0 = 1
+    gamma_0 = 2
     list_p_noMarkov = []
     if type == 'Bellomo':
         def non_markov_list_p(lamb,gamma_0,t):
@@ -106,34 +157,36 @@ def get_list_p_noMarkov(list_p, type):
         list_p_noMarkov.append(non_markov_list_p(lamb,gamma_0,p))
     return list_p_noMarkov
 
-T = np.linspace(0.01,100,20)
-#t_A = get_list_p_noMarkov(T, 'Ana')
+T = np.linspace(0.01,1000,200)
+t_A = get_list_p_noMarkov(T, 'Ana')
 t_B = get_list_p_noMarkov(T, 'Bellomo')
 #t_A = T
 
 state = werner_state(-0.8,-0.8,-0.8)
 print('werner_state',state)
-s.exit()
+#s.exit()
 print(RHO_t_NM(state, 14))
 print(type(RHO_t_NM(state, 14)))
 print(calculate_entanglement(RHO_t_NM(state, 14)))
 
 # y1 = [coh_l1(RHO_t_NM(state, i)) for i in t_A]
 y1 = [calculate_entanglement(RHO_t_NM(state, i)) for i in t_A]
-
-# y2 = [coh_l1(RHO_t_NM(state, i)) for i in t_B]
-
+y2 = [coh_l1(RHO_t_NM(state, i)) for i in t_A]
 y3 = [concurrence(RHO_t_NM(state, i)) for i in t_A]
-# y4 = [concurrence(RHO_t_NM(state, i)) for i in t_B]
+
+y4 = [calculate_entanglement(RHO_t_NM(state, i)) for i in t_B]
+y5 = [coh_l1(RHO_t_NM(state, i)) for i in t_B]
+y6 = [concurrence(RHO_t_NM(state, i)) for i in t_B]
 
 #T = [ np.log(i) for i in t_A]
-# plt.plot(t_A,y1,label='coh_l1 - Ana')
-# plt.plot(t_B,y2,label='coh_l1 - Bellomo')
-# plt.plot(t_A,y3,label='concurrence - Ana')
-# plt.plot(t_A,y3,label='entanglement - Ana')
-# plt.plot(t_B,y4,label='concurrence - Bellomo')
+plt.plot(T,y1,label='entanglement - Ana')
+plt.plot(T,y2,label='coh_l1 - Ana')
+plt.plot(T,y3,label='concurrence - Ana')
 
-plt.ylabel('concurrence')
+# plt.plot(T,y4,label='entanglement - Bellomo')
+# plt.plot(T,y5,label='coh_l1 - Bellomo')
+# plt.plot(T,y6,label='concurrence - Bellomo')
+
 plt.xscale('log')
 plt.xlabel('log(t)')
 

@@ -40,7 +40,7 @@ import math
 import scipy.linalg.lapack as lapak
 import sys
 sys.path.append('..')
-import src.pTrace
+#import src.pTrace
 
 def purity(rho):
     d = rho.shape[0]
