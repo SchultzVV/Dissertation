@@ -8,6 +8,8 @@ from matplotlib import pyplot as plt
 #%matplotlib inline
 from sympy.physics.quantum.dagger import Dagger
 from sympy.physics.quantum import TensorProduct
+from scipy.linalg import eigvals
+
 import scipy.interpolate
 import platform
 
@@ -49,8 +51,25 @@ def RHO_t_NM(state,J):
     tp2 = TP(K_1(J),K_0(J))
     return tp1*proj(state)*tp1.T + tp2*proj(state)*tp2.T
 
-# Função para calcular o emaranhamento
 def calculate_entanglement(rho):
+    # Compute the spin-flipped counterpart
+    sigma_y = Matrix([[0, -1j], [1j, 0]])
+    rho_tilde = np.kron(sigma_y, sigma_y) @ np.conj(rho.T) @ np.kron(sigma_y, sigma_y)
+
+    # Convert rho_tilde to a NumPy array
+    rho_tilde_numpy = np.array(rho_tilde.tolist(), dtype=np.complex128)
+
+    # Compute the eigenvalues of the modified matrix
+    eigenvalues = eigvals(rho_tilde_numpy)
+    eigenvalues = np.sort(eigenvalues)[::-1]  # Sort in descending order
+
+    # Calculate the entanglement measure
+    entanglement = max(0, eigenvalues[0] - eigenvalues[1] - eigenvalues[2] - eigenvalues[3])
+
+    return entanglement
+
+# Função para calcular o emaranhamento
+def calculate_entanglement2(rho):
     rho_sqrt = rho.applyfunc(sympify)  # Convert all matrix elements to sympy expressions
     eigenvalues = rho_sqrt.eigenvals()  # Calculate eigenvalues using SymPy's eigenvals method
 
@@ -87,32 +106,33 @@ def get_list_p_noMarkov(list_p, type):
         list_p_noMarkov.append(non_markov_list_p(lamb,gamma_0,p))
     return list_p_noMarkov
 
-#list_p = np.linspace(0.1,100,10)
 T = np.linspace(0.01,100,20)
-t_A = get_list_p_noMarkov(T, 'Ana')
-# t_B = get_list_p_noMarkov(T, 'Bellomo')
-
-#T = np.logspace(0.01, 100, 100) 
-t_A = T
-# t_B = T
+#t_A = get_list_p_noMarkov(T, 'Ana')
+t_B = get_list_p_noMarkov(T, 'Bellomo')
+#t_A = T
 
 state = werner_state(-0.8,-0.8,-0.8)
+print('werner_state',state)
+s.exit()
 print(RHO_t_NM(state, 14))
 print(type(RHO_t_NM(state, 14)))
 print(calculate_entanglement(RHO_t_NM(state, 14)))
-# y1 = [coh_l1(RHO_t_NM(state, i)) for i in t_A]
 
+# y1 = [coh_l1(RHO_t_NM(state, i)) for i in t_A]
 y1 = [calculate_entanglement(RHO_t_NM(state, i)) for i in t_A]
+
 # y2 = [coh_l1(RHO_t_NM(state, i)) for i in t_B]
 
 y3 = [concurrence(RHO_t_NM(state, i)) for i in t_A]
-#y4 = [concurrence(RHO_t_NM(state, i)) for i in t_B]
+# y4 = [concurrence(RHO_t_NM(state, i)) for i in t_B]
 
 #T = [ np.log(i) for i in t_A]
-plt.plot(t_A,y1,label='coh_l1 - Ana')
+# plt.plot(t_A,y1,label='coh_l1 - Ana')
 # plt.plot(t_B,y2,label='coh_l1 - Bellomo')
-plt.plot(t_A,y3,label='concurrence - Ana')
+# plt.plot(t_A,y3,label='concurrence - Ana')
+# plt.plot(t_A,y3,label='entanglement - Ana')
 # plt.plot(t_B,y4,label='concurrence - Bellomo')
+
 plt.ylabel('concurrence')
 plt.xscale('log')
 plt.xlabel('log(t)')
