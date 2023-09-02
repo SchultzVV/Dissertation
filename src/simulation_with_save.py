@@ -327,7 +327,8 @@ class Simulate(object):
     def     run_calcs_noMarkov(self, save, theta, phi):#, gamma=None):
         #coerencias_R = []
         coerencias_L = []
-        # self.list_p = get_list_p_noMarkov(self.list_p,'Ana')
+        print('list_t = ', self.list_p)
+        self.list_p = get_list_p_noMarkov(self.list_p,'Ana')
         print('list_t = ', self.list_p)
         #self.list_p = [i/max(self.list_p) for i in self.list_p]
         pretrain = True
@@ -389,12 +390,12 @@ def main():
     # print(list_p)
     # print(type(list_p))
     S.run_calcs_noMarkov(True, pi/2, 0)
-    S.run_calcs(False, pi/2, 0)
+    # S.run_calcs(False, pi/2, 0)
     
     #phis = [0,pi,pi/1.5,pi/2,pi/3,pi/4,pi/5]
     #S.run_sequential_bf(phis)
-    #plt.legend(loc=1)
-    #plt.show()
+    plt.legend(loc=1)
+    plt.show()
 
 if __name__ == "__main__":
     main()
