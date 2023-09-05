@@ -13,9 +13,9 @@ from numpy import pi
 import os
 from matplotlib.widgets import Slider, Button
 import sys
-sys.path.append('runtime-qiskit')
-sys.path.append('src')
+
 #sys.path.append('src')
+sys.path.append('src')
 import pickle
 import ipywidgets as widgets
 from IPython.display import display

@@ -1,3 +1,6 @@
+
+import sys
+sys.path.append('/home/v/Dissertation')
 from src.simulation_with_save import *
 from numpy import cos, sin, exp, linspace, meshgrid, array, zeros, shape
 
@@ -12,7 +15,7 @@ def non_markov_t_Ana(lamb,t):
     return result
 
 def plot_space(mode):
-    size = 20
+    size = 200
     t = linspace(0,60,size)
     lamb_list = linspace(0,0.08,size)
     z = zeros((size,size));    j = 0;    k = 0
@@ -39,11 +42,11 @@ def plot_space(mode):
     ax = fig.add_subplot(projection='3d')
 
     surf = ax.plot_surface(t, lamb_list,z)
-    ax.set_title(f'{mode}')
+    #ax.set_title(f'{mode}')
     ax.set_xlabel('t')
     ax.set_ylabel('lambda')
     ax.set_zlabel('p(t,lambda)')
     plt.show()
 
 plot_space('Ana')
-plot_space('Bellomo')
+# plot_space('Bellomo')

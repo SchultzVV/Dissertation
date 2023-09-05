@@ -164,10 +164,12 @@ t_B = get_list_p_noMarkov(T, 'Bellomo')
 
 state = werner_state(-0.8,-0.8,-0.8)
 print('werner_state',state)
-#s.exit()
+print('werner_state state =',type(state))
 print(RHO_t_NM(state, 14))
 print(type(RHO_t_NM(state, 14)))
 print(calculate_entanglement(RHO_t_NM(state, 14)))
+print('RHO_t_NM(state, 14) =',type(RHO_t_NM(state, 14)))
+# s.exit()
 
 # y1 = [coh_l1(RHO_t_NM(state, i)) for i in t_A]
 y1 = [calculate_entanglement(RHO_t_NM(state, i)) for i in t_A]
@@ -183,9 +185,9 @@ plt.plot(T,y1,label='entanglement - Ana')
 plt.plot(T,y2,label='coh_l1 - Ana')
 plt.plot(T,y3,label='concurrence - Ana')
 
-# plt.plot(T,y4,label='entanglement - Bellomo')
-# plt.plot(T,y5,label='coh_l1 - Bellomo')
-# plt.plot(T,y6,label='concurrence - Bellomo')
+plt.plot(T,y4,label='entanglement - Bellomo')
+plt.plot(T,y5,label='coh_l1 - Bellomo')
+plt.plot(T,y6,label='concurrence - Bellomo')
 
 plt.xscale('log')
 plt.xlabel('log(t)')

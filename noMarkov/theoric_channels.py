@@ -1,17 +1,19 @@
-from sympy import cos, sin, sqrt, pi, Matrix, Symbol, exp, print_latex, simplify
+from sympy import cos, sin, pi, Matrix, Symbol, exp, print_latex, simplify
 import numpy as np
 from numpy import linspace
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np 
-import math
-from coherence import coh_l1
+from math import sqrt
 import pickle
 import sys
-from kraus_maps import get_list_p_noMarkov
-
-#sys.path.append('runtime-qiskit')
+sys.path.append('/home/v/Dissertation')
 sys.path.append('src')
+from coherence import coh_l1
+
+from kraus_maps import get_list_p_noMarkov
+#from noMarkov.run import non_markov_t_Bellomo, non_markov_t_Ana
+#sys.path.append('runtime-qiskit')
 
 class TheoricMaps():
     def __init__(self):
@@ -110,6 +112,7 @@ class TheoricMaps():
         return print_latex(self.coherence(self.theoric_rho_A_adg(self.theta,self.phi, self.p)))
 
     def theoric_rho_A_ad(self,theta, phi, p):
+        print(1-p)
         state = Matrix([[p*(sin(theta/2)**2)+(cos(theta/2)**2),
                         (sqrt(1-p)*cos(theta/2)*exp(-1j*phi)*sin(theta/2))],[
                         (sqrt(1-p)*cos(theta/2)*exp(1j*phi)*sin(theta/2)),
@@ -238,14 +241,6 @@ class TheoricMaps():
 
     def plot_theoric(self, list_p, map_name, theta, phi):
         cohs = []
-        #if map_name == 'hw':
-        #    C_Psi0 = []
-        #    for pp in list_p:
-        #        C_Psi0.append(abs(3*pp-1))
-        #    plt.plot(list_p, C_Psi0)
-            #plt.xlabel('p')#; plt.ylabel(r'$C(\psi_{0})$')
-
-        #else:
         if map_name == 'l':
             list_p = np.linspace(0,pi/2,len(list_p))
         for pp in list_p:
@@ -334,48 +329,50 @@ def main():
     #--------- para plotar todos os dados salvos com os valores teóricos:---------
     #x = np.linspace(-100,100,21)
     #x = [0, pi/4, 3*pi/4, pi]
-    x = np.linspace(0,100,21)
-    x = get_list_p_noMarkov(x,'Ana')
+    x = np.linspace(1,100,21)
+    #x = get_list_p_noMarkov(x,'Ana')
+    x = get_list_p_noMarkov(x,'Bellomo')
+    #non_markov_t_Bellomo, non_markov_t_Ana
     print(x)
     # x = [i/max(x) for i in x]
-    print(x)
+    #print(x)
 
-    a.plot_storaged('ad',False)
-    #a.plot_theoric(x,'ad',theta=pi/2,phi=0)
+    #a.plot_storaged('ad',False)
+    a.plot_theoric(x,'ad',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('pf',False)
-    #a.plot_theoric(x,'pf',theta=pi/2,phi=0)
+    #a.plot_storaged('pf',False)
+    a.plot_theoric(x,'pf',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('bf',False)
+    #a.plot_storaged('bf',False)
     a.plot_theoric(x,'bf',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('bpf',False)
+    #a.plot_storaged('bpf',False)
     a.plot_theoric(x,'bpf',theta=pi/2,phi=0.0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('d',False)
+    #a.plot_storaged('d',False)
     a.plot_theoric(x,'d',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('l',False)
+    #a.plot_storaged('l',False)
     a.plot_theoric(x,'l',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('adg',False)
+    #a.plot_storaged('adg',False)
     #a.plot_theoric(x,'adg',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 # 
-    a.plot_storaged('hw',False)
+    #a.plot_storaged('hw',False)
     a.plot_theoric(x,'hw',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()

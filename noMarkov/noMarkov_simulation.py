@@ -12,7 +12,7 @@ from torch import tensor
 from numpy import pi
 import os
 import sys
-sys.path.append('runtime-qiskit')
+sys.path.append('/home/v/Dissertation')
 sys.path.append('src')
 #sys.path.append('src')
 import pickle
@@ -24,7 +24,7 @@ import pickle
 from pTrace import pTraceR_num, pTraceL_num
 from coherence import coh_l1
 from kraus_maps import QuantumChannels as QCH
-from theoric_channels import TheoricMaps as tm
+from noMarkov.theoric_channels import TheoricMaps as tm
 
 
 class Simulate(object):
@@ -285,10 +285,10 @@ class Simulate(object):
         if save:
             with open(f'data/{self.map_name}/coerencia_L_e_R.pkl', 'wb') as f:
                 pickle.dump(mylist, f)
-        if self.map_name == 'hw':
-            pass
-        else:
-            self.plot_theoric_map(theta, phi)
+        #if self.map_name == 'hw':
+        #    pass
+        #else:
+        self.plot_theoric_map(theta, phi)
         self.plots(self.list_p, self.coerencias_L)
 
     
@@ -297,30 +297,43 @@ class Simulate(object):
             self.run_calcs(True, pi/2, i)
 
 from numpy import cos, sin, sqrt, pi, exp
+def non_markov_t_Bellomo(lamb,t):
+    gamma_0 = 2.8
+    d = sqrt(2*gamma_0*lamb-lamb**2)
+    result = exp(-lamb*t)*(cos(d*t/2)+(lamb/d)*sin(d*t/2))**2
+    return result
+
+def non_markov_t_Ana(lamb,t):
+    result = 1 - exp(-lamb*t)*(cos(t/2)+lamb*sin(t/2))
+    return result
+
 def non_markov_list_p(lamb,gamma_0,t):
     d = sqrt(2*gamma_0*lamb-lamb**2)
     result = exp(-lamb*t)*(cos(d*t/2)+(lamb/d)*sin(d*t/2))**2
     return result
 def get_list_p_noMarkov(list_p):
-    lamb = 5
-    gamma_0 = 2.8
+    lamb = 0.02
+    gamma_0 = 0.6
     list_p_noMarkov = []
     for p in list_p:
-        list_p_noMarkov.append(non_markov_list_p(lamb,gamma_0,p))
+        # list_p_noMarkov.append(non_markov_t_Ana(lamb,p))
+        list_p_noMarkov.append(non_markov_t_Bellomo(lamb,p))
+        #list_p_noMarkov.append(non_markov_list_p(lamb,gamma_0,p))
     return list_p_noMarkov
 
 def main():
     n_qubits = 2
-    list_p = np.linspace(0,1,5)
+    #list_p = np.linspace(0,100,10)
+    list_p = np.linspace(0.01,100,10)
     #pj = 
     list_p = get_list_p_noMarkov(list_p)
     print(list_p)
     print(type(list_p))
     #s.exit()
-    epochs = 80
-    step_to_start = 45
+    epochs = 1
+    step_to_start = 1
     rho_AB = QCH.rho_AB_ad
-    S = Simulate('ad', n_qubits, list_p, epochs, step_to_start, rho_AB)
+    S = Simulate('hw', n_qubits, list_p, epochs, step_to_start, rho_AB)
     S.run_calcs_noMarkov(False, pi/2, 0)
     #S.run_calcs(True, pi/2, 0)
     

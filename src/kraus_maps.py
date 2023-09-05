@@ -9,8 +9,8 @@ from numpy import linspace
 from torch import tensor
 
 def get_list_p_noMarkov(list_p, type):
-        lamb = 0.05
-        gamma_0 = 2.8
+        lamb = 0.01
+        gamma_0 = 2
         list_p_noMarkov = []
         if type == 'Bellomo':
             def non_markov_list_p(lamb,gamma_0,t):
