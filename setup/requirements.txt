@@ -5,3 +5,4 @@ qiskit-ignis
 pennylane-qiskit
 qiskit-ibm-runtime
 pyqt5
+qutip

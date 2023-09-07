@@ -324,7 +324,7 @@ class Simulate(object):
         self.plot_theoric_map(theta, phi)
         self.plots(self.list_p, self.coerencias_L)
     
-    def     run_calcs_noMarkov(self, save, theta, phi):#, gamma=None):
+    def run_calcs_noMarkov(self, save, theta, phi):#, gamma=None):
         #coerencias_R = []
         coerencias_L = []
         print('list_t = ', self.list_p)
@@ -355,7 +355,7 @@ class Simulate(object):
                     'p': p}
             print(data)
             if save:
-                filename = f'noMarkov/data/{self.map_name}/paramsP_{p:.2f}theta_{theta:.2f}_phi{phi:.2f}.pkl'
+                filename = f'noMarkov/data/{self.map_name}/state/paramsP_{p:.2f}theta_{theta:.2f}_phi{phi:.2f}_{self.epochs}.pkl'
                 if os.path.isfile(filename):
                     print(f'O arquivo {filename} já existe. Não salve novamente.')
                     pass
@@ -372,6 +372,29 @@ class Simulate(object):
         self.plot_theoric_map(theta, phi)
         self.plots_markov(self.list_p, self.coerencias_L)
 
+    def reload_rho(self, map_name, markovianity):
+        if markovianity:
+            pasta = f'data/{map_name}/state/'  # Substitua pelo caminho da sua pasta
+            arquivos_pkl = [arquivo for arquivo in os.listdir(pasta) if arquivo.endswith('.pkl')]
+            for arquivo in arquivos_pkl:
+                path = pasta+arquivo
+                with open(path, 'rb') as file:
+                    # Use pickle.load() para desserializar o objeto
+                    best_params = pickle.load(file)
+                #params = ler com pickle
+                coerencias_L = []
+                count = 0
+                print(best_params['params'])
+                params = best_params['params'].clone().detach().numpy()
+                self.qc, self.qr = self.general_vqacircuit_qiskit(self.n_qubits, params)
+                #self.qc, self.qr = self.general_vqacircuit_penny(best_params, self.n_qubits, self.depht)
+                rho = self.tomograph()
+                print(rho)
+        else:
+            pasta = f'noMarkov/data/{map_name}/state'
+
+            # print(arquivo)
+            # print(type(arquivo))
     
     def run_sequential_bf(self, phis):
         for i in phis:
@@ -381,16 +404,18 @@ class Simulate(object):
 def main():
     n_qubits = 2
     d_rho_A = 2
-    list_p = np.linspace(0.001,1,5)
-    epochs = 1
-    step_to_start = 1
-    rho_AB = QCH.rho_AB_ad
-    S = Simulate('ad', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
+    list_p = np.linspace(0,1.6,21)
+    epochs = 120
+    step_to_start = 80
+    rho_AB = QCH.rho_AB_l
+    S = Simulate('l', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
+    S.reload_rho('ad',True)
+    sys.exit()
     #list_p = S.get_list_p_noMarkov()
     # print(list_p)
     # print(type(list_p))
-    S.run_calcs_noMarkov(True, pi/2, 0)
-    # S.run_calcs(False, pi/2, 0)
+    #S.run_calcs_noMarkov(True, pi/2, 0)
+    S.run_calcs(True, pi/2, 0)
     
     #phis = [0,pi,pi/1.5,pi/2,pi/3,pi/4,pi/5]
     #S.run_sequential_bf(phis)

@@ -225,6 +225,7 @@ class TheoricMaps():
 
     def plot_storaged(self, map_name,markovianity):
         #path = f'../data/{map}/{map}-coherences.pkl'
+        print(markovianity)
         if markovianity:
             try:
                 path = f'data/{map_name}/coerencia_L_e_R.pkl'
@@ -329,51 +330,51 @@ def main():
     #--------- para plotar todos os dados salvos com os valores teóricos:---------
     #x = np.linspace(-100,100,21)
     #x = [0, pi/4, 3*pi/4, pi]
-    x = np.linspace(1,100,21)
+    x = np.linspace(0,1,21)
     #x = get_list_p_noMarkov(x,'Ana')
-    x = get_list_p_noMarkov(x,'Bellomo')
+    #x = get_list_p_noMarkov(x,'Bellomo')
     #non_markov_t_Bellomo, non_markov_t_Ana
     print(x)
     # x = [i/max(x) for i in x]
     #print(x)
 
-    #a.plot_storaged('ad',False)
-    a.plot_theoric(x,'ad',theta=pi/2,phi=0)
+    a.plot_storaged('ad',True)
+    # a.plot_theoric(x,'ad',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    #a.plot_storaged('pf',False)
-    a.plot_theoric(x,'pf',theta=pi/2,phi=0)
+    a.plot_storaged('pf',True)
+    # a.plot_theoric(x,'pf',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    #a.plot_storaged('bf',False)
-    a.plot_theoric(x,'bf',theta=pi/2,phi=0)
+    a.plot_storaged('bf',True)
+    # a.plot_theoric(x,'bf',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    #a.plot_storaged('bpf',False)
-    a.plot_theoric(x,'bpf',theta=pi/2,phi=0.0)
+    a.plot_storaged('bpf',True)
+    # a.plot_theoric(x,'bpf',theta=pi/2,phi=0.0)
     plt.legend(loc=1)
     plt.show()
 
-    #a.plot_storaged('d',False)
-    a.plot_theoric(x,'d',theta=pi/2,phi=0)
+    a.plot_storaged('d',True)
+    # a.plot_theoric(x,'d',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    #a.plot_storaged('l',False)
-    a.plot_theoric(x,'l',theta=pi/2,phi=0)
+    a.plot_storaged('l',True)
+    # a.plot_theoric(x,'l',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    #a.plot_storaged('adg',False)
-    #a.plot_theoric(x,'adg',theta=pi/2,phi=0)
+    a.plot_storaged('adg',True)
+    # a.plot_theoric(x,'adg',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 # 
-    #a.plot_storaged('hw',False)
-    a.plot_theoric(x,'hw',theta=pi/2,phi=0)
+    #a.plot_storaged('hw',True)
+    # a.plot_theoric(x,'hw',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
     #-----------------------------------------------------------------------------

@@ -7,8 +7,10 @@ import numpy as np
 import math
 from coherence import coh_l1
 import pickle
-import sys
+import sys, os
 from kraus_maps import get_list_p_noMarkov
+from simulation_with_save import Simulate as S
+from qutip import Bloch, basis
 
 #sys.path.append('runtime-qiskit')
 sys.path.append('src')
@@ -211,7 +213,7 @@ class TheoricMaps():
         p1 = (1-p)/2
         p2 = (1-p)/2
         A = (p0+p1+p2)/3
-        # *1j*pi/3
+        
         state = Matrix([[A,(1/3)*(p0+p1*exp(-2*1j*pi/3)+p2*exp(-4*1j*pi/3)), (1/3)*(p0+p1*exp(-4*1j*pi/3)+p2*exp(8*1j*pi/3)), 0],
                     [(1/3)*(p0+p1*exp(2*1j*pi/3)+p2*exp(4*1j*pi/3)), A, (1/3)*(p0+p1*exp(-2*1j*pi/3)+p2*exp(-4*1j*pi/3)), 0],
                     [(1/3)*(p0+p1*exp(4*1j*pi/3)+p2*exp(8*1j*pi/3)), (1/3)*(p0+p1*exp(2*1j*pi/3)+p2*exp(4*1j*pi/3)), A, 0],
@@ -221,6 +223,27 @@ class TheoricMaps():
 
 
     def plot_storaged(self, map_name,markovianity):
+        #path = f'../data/{map}/{map}-coherences.pkl'
+        if markovianity:
+            print(markovianity)
+            try:
+                path = f'data/{map_name}/coerencia_L_e_R.pkl'
+                rho_l = self.read_data(path)[0]#.detach().numpy()
+            except:
+
+                path = f'data/{map_name}/ClassTestcasa.pkl'
+                rho_l = self.read_data(path)[0]#.detach().numpy()
+            if map_name == 'l':
+                path = f'data/{map_name}/ClassTestcasa.pkl'
+                rho_l = self.read_data(path)[0]#.detach().numpy()
+        else:
+            path = f'noMarkov/data/{map_name}/coerencia_L_e_R.pkl'
+            rho_l = self.read_data(path)[0]#.detach().numpy()
+        print(path)
+        plt.scatter(np.linspace(0,1,len(rho_l)),rho_l,label='protocolo')
+
+    
+    def plot_storaged2(self, map_name,markovianity):
         #path = f'../data/{map}/{map}-coherences.pkl'
         if markovianity:
             try:
@@ -235,6 +258,16 @@ class TheoricMaps():
             rho_l = self.read_data(path)[0]#.detach().numpy()
         plt.plot(np.linspace(0,1,len(rho_l)),rho_l,label=f'{map_name}')
 
+    def reload_rho(self, map_name, markovianity):
+        if markovianity:
+            pasta = f'data/{map_name}/state'  # Substitua pelo caminho da sua pasta
+        else:
+            pasta = f'noMarkov/data/{map_name}/state'
+        arquivos_pkl = [arquivo for arquivo in os.listdir(pasta) if arquivo.endswith('.pkl')]
+
+        for arquivo in arquivos_pkl:
+            print(arquivo)
+            print(type(arquivo))
 
     def plot_theoric(self, list_p, map_name, theta, phi):
         cohs = []
@@ -270,7 +303,7 @@ class TheoricMaps():
         else:
             plt.xlabel('p')
         plt.ylabel('coerência')
-        plt.plot(list_p,cohs,label='teórico')
+        plt.plot(list_p,cohs,label='isometria')
         plt.title(m)
     
     def plot_all_theoric_space(self,map):
@@ -318,10 +351,14 @@ from numpy import cos, sin, sqrt, pi, exp
 
 
 def main():
+    
     a = TheoricMaps()
+    a.reload_rho('ad', True)
+    sys.exit()
+
     #a.print_state()
     #--------- para plotar os mapas para diferentes valores de theta e phi:-------
-    #a.plot_all_theoric_space('ad')
+    # a.plot_all_theoric_space('ad')
     #a.plot_all_theoric_space('pf')
     #a.plot_all_theoric_space('bf')
     #a.plot_all_theoric_space('bpf')
@@ -334,47 +371,47 @@ def main():
     #--------- para plotar todos os dados salvos com os valores teóricos:---------
     #x = np.linspace(-100,100,21)
     #x = [0, pi/4, 3*pi/4, pi]
-    x = np.linspace(0,100,21)
-    x = get_list_p_noMarkov(x,'Ana')
+    x = np.linspace(0,1,21)
+    #x = get_list_p_noMarkov(x,'Ana')
     # x = [i/max(x) for i in x]
     print(x)
 
-    a.plot_storaged('ad',False)
-    #a.plot_theoric(x,'ad',theta=pi/2,phi=0)
+    a.plot_storaged('ad',True)
+    a.plot_theoric(x,'ad',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('pf',False)
-    #a.plot_theoric(x,'pf',theta=pi/2,phi=0)
+    a.plot_storaged('pf',True)
+    a.plot_theoric(x,'pf',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('bf',False)
-    a.plot_theoric(x,'bf',theta=pi/2,phi=0)
+    a.plot_storaged('bf',True)
+    a.plot_theoric(x,'bf',theta=pi/2,phi=pi/2)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('bpf',False)
+    a.plot_storaged('bpf',True)
     a.plot_theoric(x,'bpf',theta=pi/2,phi=0.0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('d',False)
+    a.plot_storaged('d',True)
     a.plot_theoric(x,'d',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('l',False)
+    a.plot_storaged('l',True)
     a.plot_theoric(x,'l',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('adg',False)
-    #a.plot_theoric(x,'adg',theta=pi/2,phi=0)
+    a.plot_storaged('adg',True)
+    a.plot_theoric(x,'adg',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 # 
-    a.plot_storaged('hw',False)
+    a.plot_storaged('hw',True)
     a.plot_theoric(x,'hw',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
