@@ -38,7 +38,7 @@ class Simulate(object):
         self.epochs = epochs
         self.step_to_start = step_to_start
         self.rho_AB = rho_AB
-        self.coerencias_R = []
+        self.coerencias_R = [] # Essa é a certa
         self.map_name = map_name
         self.coerencias_L = []
         self.n_qubits = n_qubits
@@ -65,6 +65,10 @@ class Simulate(object):
         a = tm()
         a.plot_theoric(self.list_p,self.map_name,theta,phi)
 
+    def read_data(self, path):
+        with open(path, 'rb') as f:
+            data = pickle.load(f)
+        return data
 
     def general_vqacircuit_penny(self, params, n_qubits, depht=None):
         if depht == None:
@@ -204,7 +208,7 @@ class Simulate(object):
     def plots(self, list_p, coerencias_L):
         print(list_p)
         print(len(coerencias_L))
-        plt.scatter(list_p,coerencias_L,label='Simulado')
+        plt.scatter(list_p,coerencias_L,label='simulação')
         plt.xlabel(' p ')
         plt.ylabel(' Coerência ')
         plt.legend(loc=0)
@@ -214,67 +218,14 @@ class Simulate(object):
     def plots_markov(self, list_p, coerencias_L):
         print(list_p)
         print(len(coerencias_L))
-        plt.scatter(list_p,coerencias_L,label='Simulado')
+        x = [i for i in range(len(coerencias_L))]
+        plt.scatter(x, coerencias_L, label='simulação')
         plt.xlabel(' p ')
         plt.ylabel(' Coerência ')
         plt.legend(loc=0)
         plt.savefig(f'noMarkov/figures/automatic/{self.map_name}.png')
         plt.show()
 
-    def plots2(self, list_p, coerencias_L):
-        fig, ax = plt.subplots()
-        scatter = ax.scatter(list_p, coerencias_L, label='Simulado')
-        ax.set_xlabel('p')
-        ax.set_ylabel('Coerência')
-        ax.legend(loc=0)
-
-        # adjust the main plot to make room for the sliders
-        fig.subplots_adjust(left=0.25, bottom=0.25)
-
-        # Make a horizontal slider to control the frequency
-        axfreq = fig.add_axes([0.25, 0.1, 0.65, 0.03])
-        freq_slider = Slider(
-            ax=axfreq,
-            label='Frequency [Hz]',
-            valmin=0.1,
-            valmax=30,
-            valinit=1,
-        )
-
-        # Make a vertically oriented slider to control the amplitude
-        axamp = fig.add_axes([0.1, 0.25, 0.0225, 0.63])
-        amp_slider = Slider(
-            ax=axamp,
-            label="Amplitude",
-            valmin=0,
-            valmax=10,
-            valinit=1,
-            orientation="vertical"
-        )
-
-        def update(val):
-            # Update the scatter plot with new values based on sliders
-            amplitude = amp_slider.val
-            frequency = freq_slider.val
-            scatter.set_sizes(amplitude * coerencias_L)
-            scatter.set_offsets(np.column_stack((list_p, frequency * coerencias_L)))
-            fig.canvas.draw_idle()
-
-        # Register the update function with each slider
-        freq_slider.on_changed(update)
-        amp_slider.on_changed(update)
-
-        # Create a `matplotlib.widgets.Button` to reset the sliders to initial values
-        resetax = fig.add_axes([0.8, 0.025, 0.1, 0.04])
-        button = Button(resetax, 'Reset', hovercolor='0.975')
-
-        def reset(event):
-            freq_slider.reset()
-            amp_slider.reset()
-
-        button.on_clicked(reset)
-
-        #plt.show()
 
     #def run_calcs(self, save, theta, phi):#, gamma=None):
     def run_calcs(self, save, theta, phi):#, gamma=None):
@@ -328,7 +279,7 @@ class Simulate(object):
         #coerencias_R = []
         coerencias_L = []
         print('list_t = ', self.list_p)
-        self.list_p = get_list_p_noMarkov(self.list_p,'Ana')
+        self.list_p = get_list_p_noMarkov(self.list_p,'Bellomo')
         print('list_t = ', self.list_p)
         #self.list_p = [i/max(self.list_p) for i in self.list_p]
         pretrain = True
@@ -355,7 +306,8 @@ class Simulate(object):
                     'p': p}
             print(data)
             if save:
-                filename = f'noMarkov/data/{self.map_name}/state/paramsP_{p:.2f}theta_{theta:.2f}_phi{phi:.2f}_{self.epochs}.pkl'
+                #filename = f'noMarkov/data/{self.map_name}/state/paramsP_{p:.2f}theta_{theta:.2f}_phi{phi:.2f}_{self.epochs}.pkl'
+                filename = f'data/noMarkov/{self.map_name}/state/paramsP_{p:.2f}theta_{theta:.2f}_phi{phi:.2f}_{self.epochs}.pkl'
                 if os.path.isfile(filename):
                     print(f'O arquivo {filename} já existe. Não salve novamente.')
                     pass
@@ -367,14 +319,38 @@ class Simulate(object):
             self.coerencias_L, self.coerencias_R = self.results(rho, self.coerencias_R, coerencias_L)
         mylist = [self.coerencias_L, self.coerencias_R]
         if save:
-            with open(f'noMarkov/data/{self.map_name}/coerencia_L_e_R.pkl', 'wb') as f:
+            with open(f'data/noMarkov/{self.map_name}/coerencia_L_e_R.pkl', 'wb') as f:
                 pickle.dump(mylist, f)
         self.plot_theoric_map(theta, phi)
         self.plots_markov(self.list_p, self.coerencias_L)
 
+    def rho_from_qc(self, best_params):
+        params = best_params.clone().detach().numpy()
+        self.qc, self.qr = self.general_vqacircuit_qiskit(self.n_qubits, params)
+        #self.qc, self.qr = self.general_vqacircuit_penny(best_params, self.n_qubits, self.depht)
+        rho = self.tomograph()
+        print(rho)
+        self.coerencias_L, self.coerencias_R = self.results(rho, self.coerencias_R, self.coerencias_L)
+        print(self.coerencias_R)
+        return rho
+
     def reload_rho(self, map_name, markovianity):
         if markovianity:
             pasta = f'data/{map_name}/state/'  # Substitua pelo caminho da sua pasta
+            arquivos_pkl = [arquivo for arquivo in os.listdir(pasta) if arquivo.endswith('.pkl')]
+            for arquivo in arquivos_pkl:
+                path = pasta+arquivo
+                data = self.read_data(path)
+                best_params = data['params']
+                print(best_params)
+                rho = self.rho_from_qc(best_params)
+                self.coerencias_L, self.coerencias_R = self.results(rho, self.coerencias_R, coerencias_L) #7 set
+                print(self.coerencias_L)
+                print(self.coerencias_R)
+                
+                
+        else:
+            pasta = f'noMarkov/data/{map_name}/state'
             arquivos_pkl = [arquivo for arquivo in os.listdir(pasta) if arquivo.endswith('.pkl')]
             for arquivo in arquivos_pkl:
                 path = pasta+arquivo
@@ -390,37 +366,95 @@ class Simulate(object):
                 #self.qc, self.qr = self.general_vqacircuit_penny(best_params, self.n_qubits, self.depht)
                 rho = self.tomograph()
                 print(rho)
-        else:
-            pasta = f'noMarkov/data/{map_name}/state'
-
+                return rho
             # print(arquivo)
             # print(type(arquivo))
     
+    def plot_bloch(self , density_matrix):
+        from qutip import Bloch, Qobj, tensor, sigmax, sigmay, sigmaz
+        density_matrix = np.array([[0.69356156+0.j, 0.26884403-0.16545896j, 0.23831009-0.18374915j, 0.14206474-0.01111998j],
+                           [0.26884403+0.16545896j, 0.14528759+0.j, 0.13498041-0.01511379j, 0.05790133+0.0295653j],
+                           [0.23831009+0.18374915j, 0.13498041+0.01511379j, 0.13185252+0.j, 0.05162894+0.03391243j],
+                           [0.14206474+0.01111998j, 0.05790133-0.0295653j, 0.05162894-0.03391243j, 0.02929833+0.j]])
+        density_matrix_qobj = Qobj(density_matrix)
+        # Define Pauli operators for the 2-qubit system
+        sigma_x = tensor(sigmax(), sigmax())
+        sigma_y = tensor(sigmay(), sigmay())
+        sigma_z = tensor(sigmaz(), sigmaz())
+
+        # Create a Bloch sphere object and add the density matrix with the corresponding Pauli operators
+        bloch_sphere = Bloch()
+        bloch_sphere.add_states(density_matrix_qobj, 'dm', [sigma_x, sigma_y, sigma_z])
+
+        # Plot the Bloch sphere
+        bloch_sphere.show()
+
+        # Save the plot to a file (optional)
+        # bloch_sphere.save('bloch_sphere.png')
+
+        # Show the plot
+        plt.show()
+
+    def worthed_plot_bloch():
+        import numpy as np
+        import matplotlib.pyplot as plt
+        from qutip import Bloch, basis
+
+        # Define your state vector
+        state_vector = np.array([1.8415, -0.8333, -1.1572, 0.8130, -0.0611, 0.4253, -0.2375, -0.6908,
+                                 -0.0169, 2.5574, 0.9711, -1.3900, 0.0281, 0.5020, -1.1698, 0.4683,
+                                 -0.6323, -1.5013, 1.2044, 2.9128, -0.5611, -0.7137, -2.4128, -3.0238],
+                                dtype=np.complex128)
+
+        # Determine the number of qubits
+        num_qubits = int(np.log2(len(state_vector)))
+
+        # Create a Bloch sphere object
+        bloch_sphere = Bloch()
+
+        # Add the state vector amplitudes to the Bloch sphere
+        for i in range(2 ** num_qubits):
+            amplitude = state_vector[i]
+            bloch_sphere.add_vectors([np.real(amplitude), np.imag(amplitude), 0])
+
+        # Plot the Bloch sphere
+        bloch_sphere.show()
+
+        # Save the plot to a file (optional)
+        # bloch_sphere.save('bloch_sphere.png')
+
+        # Show the plot
+        plt.show()
+
+
     def run_sequential_bf(self, phis):
         for i in phis:
             self.run_calcs(True, pi/2, i)
 
 
 def main():
+  
     n_qubits = 2
     d_rho_A = 2
-    list_p = np.linspace(0,1.6,21)
-    epochs = 120
-    step_to_start = 80
+    list_p = np.linspace(0,1,3)
+    epochs = 1
+    step_to_start = 1
+    markovianity = True
     rho_AB = QCH.rho_AB_l
-    S = Simulate('l', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
-    S.reload_rho('ad',True)
+    
+    S = Simulate('bpf', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
+    rho = np.array(S.reload_rho('ad', markovianity))
+    #S.plot_bloch(rho)
+    print(rho)
     sys.exit()
-    #list_p = S.get_list_p_noMarkov()
-    # print(list_p)
-    # print(type(list_p))
-    #S.run_calcs_noMarkov(True, pi/2, 0)
-    S.run_calcs(True, pi/2, 0)
+
+    S.run_calcs_noMarkov(False, pi/2, 0)
+    #S.run_calcs(True, pi/2, 0)
     
     #phis = [0,pi,pi/1.5,pi/2,pi/3,pi/4,pi/5]
     #S.run_sequential_bf(phis)
-    plt.legend(loc=1)
-    plt.show()
+    #plt.legend(loc=1)
+    #plt.show()
 
 if __name__ == "__main__":
     main()

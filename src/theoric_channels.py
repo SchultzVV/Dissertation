@@ -1,15 +1,15 @@
-from sympy import cos, sin, sqrt, pi, Matrix, Symbol, exp, print_latex, simplify
+from sympy import cos, sin, pi, Matrix, Symbol, exp, print_latex, simplify
 import numpy as np
 from numpy import linspace
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import numpy as np 
 import math
+from math import sqrt
 from coherence import coh_l1
 import pickle
 import sys, os
 from kraus_maps import get_list_p_noMarkov
-from simulation_with_save import Simulate as S
+#from simulation_with_save import Simulate as S
 from qutip import Bloch, basis
 
 #sys.path.append('runtime-qiskit')
@@ -303,7 +303,7 @@ class TheoricMaps():
         else:
             plt.xlabel('p')
         plt.ylabel('coerência')
-        plt.plot(list_p,cohs,label='isometria')
+        plt.scatter(list_p,cohs,label='isometria')
         plt.title(m)
     
     def plot_all_theoric_space(self,map):
@@ -319,6 +319,26 @@ class TheoricMaps():
         plt.legend(labels=labels,loc=1)
         plt.show()
     
+    def plot_bloch(self,state):
+        from qutip import Bloch, basis
+        num_qubits = int(np.log2(len(state)))
+        state_ket = basis(2 ** num_qubits, 0)
+        for i, amp in enumerate(state):
+            state_ket += amp * basis(2 ** num_qubits, i)
+
+        # Create a Bloch sphere object and add the state vector to it
+        bloch_sphere = Bloch()
+        bloch_sphere.add_states(state_ket)
+
+        # Plot the Bloch sphere
+        bloch_sphere.show()
+
+        # Save the plot to a file (optional)
+        # bloch_sphere.save('bloch_sphere.png')
+
+        # Show the plot
+        plt.show()
+
     def coherence(self, state):
         # Extrai os elementos do vetor de estado
         a11, a12, a21, a22 = state.tolist()[0]
@@ -331,7 +351,145 @@ class TheoricMaps():
         coherence = abs(inner_product)/(norm_a1*norm_a2)
         # Retorna a expressão LaTeX da coerência
         return coherence
+    
 
+    def ad(self, p, theta, phi):
+        #theta = np.pi/2
+        #phi = 0
+        #return 
+        return abs(np.sin(theta/2)) * abs(np.sqrt(p) * np.exp(1j * phi) + np.sqrt(1 - p) * np.exp(1j * phi))
+        #return 2*sin(theta/2)*cos(theta/2)*sqrt(4*(p**2)*(cos(phi)**2)-4*p*(cos(phi)**2)+1) # bf
+    
+    def d(self, p, theta, phi):
+        #theta = np.pi/2
+        #phi = 0
+        return 2*(1-p)*np.sin(theta/2)*np.cos(theta/2) # d
+    
+    def hw(self, p, theta, phi):
+        #theta = np.pi/2
+        #phi = 0
+        return np.sqrt(5)*((3*p-1)/6) #'hw'
+    
+    def pd(self, p, theta, phi):
+        #theta = np.pi/2
+        #phi = 0        
+        return 2*np.sqrt(1-p)*np.sin(theta/2)*np.cos(theta/2)
+    
+    def bpf(self, p, theta, phi):
+        # theta = np.pi/2
+        # phi = np.pi/2
+        return sqrt((1-4*p+4*p**2)*(((cos(phi))**2)*((sin(phi))**2)))*(sin(theta/2))*(cos(theta/2))
+
+    def gad(self, p, theta, phi):
+        # theta = np.pi/2
+        # phi = 0        
+        return (1-p)*np.sin(theta/2)*np.cos(theta/2)*np.sqrt(np.cos(phi)-np.sin(phi))
+    
+    def l(self, p, theta, phi):
+        return np.sqrt(1-p)*np.sin(np.pi/2)*np.cos(0/2) #'l'
+    
+    def l2(self, p, theta, phi):
+        p0 = p
+        p1 = (1-p)/2
+        p2 = (1-p)/2
+        return (2)*(sqrt((p0**2)+(p1**2)+(p2**2)-(p0*p1)-(p0*p2)-(p1*p2)))
+
+    def non_markov_t_Bellomo(self, lamb, t):
+        gamma_0 = 2.8
+        d = sqrt(2*gamma_0*lamb-lamb**2)
+        result = exp(-lamb*t)*(cos(d*t/2)+(lamb/d)*sin(d*t/2))**2
+        return result
+
+    def non_markov_t_Ana(self, lamb, t):
+        result = 1 - exp(-lamb*t)*(cos(t/2)+lamb*sin(t/2))
+        return result
+
+    def plot_coh(self, map_name, x, y, label, theta, phi):
+        if map_name == 'l':
+            plt.xlabel(fr'$\xi$')
+        else:
+            plt.xlabel('p')
+
+        mpl.rcParams['text.usetex'] = True
+        th = f'{str(theta)[0:4]}'
+        fi = f'{str(phi)[0:4]}'
+        fancy_name = self.name_changer(map_name)
+        psi = fr'$|\psi({th},{fi})\rangle$.'
+        m = r"Estado inicial $|\psi(\theta,\phi)\rangle =$ " + psi
+        if map_name == 'hw':
+            #psi = fr'$\frac(|0\rangle+|1\rangle+|2\rangle\psi({th},{fi})\rangle)$.'
+            m = r"Estado inicial $|\psi\rangle = \frac{1}{\sqrt{3}}(|0\rangle+|1\rangle+|2\rangle)$ "
+        plt.title(m,usetex=True)
+        plt.suptitle(fancy_name)
+        if map_name == 'l':
+            plt.xlabel(fr'$\xi$')
+        else:
+            plt.xlabel('p')
+        plt.ylabel('coerência')
+        plt.plot(x,y,label=label)
+        # plt.scatter(x,y,label=label)
+        plt.xscale('log')
+        plt.ylabel('coerência')
+        plt.xlabel('t')
+        plt.title(m)
+        plt.legend()
+        #plt.show()
+
+    def plot_pd(self):
+        lamb = 0.01
+        x1 = np.linspace(0,1,100)
+        z = np.linspace(0.01,300,100)
+        x = np.array([self.non_markov_t_Ana(lamb,i) for i in z])
+        xb = np.array([self.non_markov_t_Bellomo(lamb,i) for i in z])
+        # print(x)
+        #x = get_list_p_noMarkov(x,'Ana')
+        print(type(x1))
+        print(type(x))
+        print(x1)
+        # print(x)
+        #x = [i/max(x) for i in x]
+        #x = get_list_p_noMarkov(x,'Bellomo')
+        # x = [i/max(x) for i in x]
+        th = np.pi/2
+        ph = 0
+        y1 = self.pd(x1, th, ph)
+        y = self.pd(x, th, ph)
+        yb = self.pd(xb, th, ph)
+        self.plot_coh('pd', x1, y1, label='no-Markovianity',theta=th,phi=ph)
+        self.plot_coh('pd', z, y, label='Markovianity_A',theta=th,phi=ph)
+        self.plot_coh('pd', z, yb, label='Markovianity_B',theta=th,phi=ph)
+        #plt.scatter(x1,y);plt.scatter(x,y);plt.xscale('log');plt.title()
+        plt.show()
+
+    def plot_pd(self):
+        lamb = 0.01
+        x1 = np.linspace(0,1,1000)
+        z = np.linspace(0.01,300,1000)
+        xa = np.array([self.non_markov_t_Ana(lamb,i) for i in z])
+        xb = np.array([self.non_markov_t_Bellomo(lamb,i) for i in z])
+        # print(x)
+        #x = get_list_p_noMarkov(x,'Ana')
+        print(type(x1))
+        print(type(xa))
+        print(x1)
+        # print(x)
+        #x = [i/max(x) for i in x]
+        #x = get_list_p_noMarkov(x,'Bellomo')
+        # x = [i/max(x) for i in x]
+        th = np.pi/2
+        ph = 0
+        y1 = self.pd(x1, th, ph)
+        ya = self.pd(xa, th, ph)
+        yb = self.pd(xb, th, ph)
+        self.plot_coh('pd', x1, y1, label='no-Markovianity',theta=th,phi=ph)
+        #self.plot_coh('pd', z, ya, label='Markovianity_A',theta=th,phi=ph) #1
+        #self.plot_coh('pd', z, yb, label='Markovianity_B',theta=th,phi=ph) #1
+        # self.plot_coh('pd', xa, ya, label='Markovianity_A',theta=th,phi=ph) #2
+        # self.plot_coh('pd', xb, yb, label='Markovianity_B',theta=th,phi=ph) #2
+        self.plot_coh('pd', x1, ya, label='Markovianity_A',theta=th,phi=ph) #3
+        self.plot_coh('pd', x1, yb, label='Markovianity_B',theta=th,phi=ph) #3
+        #plt.scatter(x1,y);plt.scatter(x,y);plt.xscale('log');plt.title()
+        plt.show()
 
 from numpy import cos, sin, sqrt, pi, exp
 # def non_markov_list_p(lamb,gamma_0,t):
@@ -351,11 +509,10 @@ from numpy import cos, sin, sqrt, pi, exp
 
 
 def main():
-    
+    from numpy import cos, sin, sqrt, pi, exp
     a = TheoricMaps()
-    a.reload_rho('ad', True)
+    a.plot_pd()
     sys.exit()
-
     #a.print_state()
     #--------- para plotar os mapas para diferentes valores de theta e phi:-------
     # a.plot_all_theoric_space('ad')
@@ -371,47 +528,73 @@ def main():
     #--------- para plotar todos os dados salvos com os valores teóricos:---------
     #x = np.linspace(-100,100,21)
     #x = [0, pi/4, 3*pi/4, pi]
-    x = np.linspace(0,1,21)
+    lamb = 0.01
+    x1 = np.linspace(0,1,100)
+    z = np.linspace(0.01,300,100)
+    x = np.array([a.non_markov_t_Ana(lamb,i) for i in z])
+    xb = np.array([a.non_markov_t_Bellomo(lamb,i) for i in z])
+    # print(x)
     #x = get_list_p_noMarkov(x,'Ana')
+    print(type(x1))
+    print(type(x))
+    print(x1)
+    # print(x)
+    #x = [i/max(x) for i in x]
+    #x = get_list_p_noMarkov(x,'Bellomo')
     # x = [i/max(x) for i in x]
-    print(x)
+    th = np.pi/2
+    ph = 0
+    y1 = a.pd(x1, th, ph)
+    y = a.pd(x, th, ph)
+    yb = a.pd(xb, th, ph)
+    a.plot_coh('pd', x1, y1, label='no-Markovianity',theta=th,phi=ph)
+    a.plot_coh('pd', z, y, label='Markovianity_A',theta=th,phi=ph)
+    a.plot_coh('pd', z, yb, label='Markovianity_B',theta=th,phi=ph)
+    #plt.scatter(x1,y);plt.scatter(x,y);plt.xscale('log');plt.title()
+    plt.show()
+    sys.exit()
 
-    a.plot_storaged('ad',True)
+    a.plot_storaged('adg',False)
+    a.plot_theoric(x,'adg',theta=pi/2,phi=0)
+    plt.legend(loc=1)
+    plt.show()
+
+    a.plot_storaged('ad',False)
     a.plot_theoric(x,'ad',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('pf',True)
+    a.plot_storaged('pf',False)
     a.plot_theoric(x,'pf',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('bf',True)
+    a.plot_storaged('bf',False)
     a.plot_theoric(x,'bf',theta=pi/2,phi=pi/2)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('bpf',True)
+    a.plot_storaged('bpf',False)
     a.plot_theoric(x,'bpf',theta=pi/2,phi=0.0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('d',True)
+    a.plot_storaged('d',False)
     a.plot_theoric(x,'d',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('l',True)
+    a.plot_storaged('l',False)
     a.plot_theoric(x,'l',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 
-    a.plot_storaged('adg',True)
+    a.plot_storaged('adg',False)
     a.plot_theoric(x,'adg',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
 # 
-    a.plot_storaged('hw',True)
+    a.plot_storaged('hw',False)
     a.plot_theoric(x,'hw',theta=pi/2,phi=0)
     plt.legend(loc=1)
     plt.show()
