@@ -233,9 +233,9 @@ class TheoricMaps():
 
                 path = f'data/{map_name}/ClassTestcasa.pkl'
                 rho_l = self.read_data(path)[0]#.detach().numpy()
-            if map_name == 'l':
-                path = f'data/{map_name}/ClassTestcasa.pkl'
-                rho_l = self.read_data(path)[0]#.detach().numpy()
+            #if map_name == 'l':
+            #    path = f'data/{map_name}/ClassTestcasa.pkl'
+            #    rho_l = self.read_data(path)[0]#.detach().numpy()
         else:
             path = f'noMarkov/data/{map_name}/coerencia_L_e_R.pkl'
             rho_l = self.read_data(path)[0]#.detach().numpy()
@@ -269,7 +269,7 @@ class TheoricMaps():
             print(arquivo)
             print(type(arquivo))
 
-    def plot_theoric(self, list_p, map_name, theta, phi):
+    def plot_theoric(self, list_p, map_name, theta, phi, descript):
         cohs = []
         #if map_name == 'hw':
         #    C_Psi0 = []
@@ -303,7 +303,7 @@ class TheoricMaps():
         else:
             plt.xlabel('p')
         plt.ylabel('coerência')
-        plt.scatter(list_p,cohs,label='isometria')
+        plt.scatter(list_p,cohs,label=descript)
         plt.title(m)
     
     def plot_all_theoric_space(self,map):
@@ -426,8 +426,8 @@ class TheoricMaps():
         else:
             plt.xlabel('p')
         plt.ylabel('coerência')
-        # plt.plot(x,y,label=label)
-        plt.scatter(x,y,label=label)
+        plt.plot(x,y,label=label)
+        # plt.scatter(x,y,label=label)
         # plt.xscale('log')
         plt.ylabel('coerência')
         plt.xlabel('t')
@@ -516,8 +516,8 @@ def main():
     #x = np.linspace(-100,100,21)
     ###x = [0, pi/4, 3*pi/4, pi]
     lamb = 0.01
-    x1 = np.linspace(0,1,100)
-    x2 = np.linspace(0.01,60,100)
+    x1 = np.linspace(0,1,21)
+    x2 = np.linspace(0.01,100,21)
     xa = np.array([a.non_markov_t_Ana(lamb,i) for i in x2])
     xb = np.array([a.non_markov_t_Bellomo(lamb,i) for i in x2])
     #x = [i/max(x) for i in x]
@@ -527,47 +527,52 @@ def main():
     y1 = a.bpf(x1, th, ph)
     ya = a.bpf(xa, th, ph)
     yb = a.bpf(xb, th, ph)
-    a.plot_coh('bpf', x1, y1, label='no-Markovianity',theta=th,phi=ph)
+    #a.plot_coh('bpf', x1, y1, label='no-Markovianity',theta=th,phi=ph)
     # a.plot_coh('pd', xa, ya, label='Markovianity_A',theta=th,phi=ph) #2
     # a.plot_coh('pd', xb, yb, label='Markovianity_B',theta=th,phi=ph) #2
     #a.plot_coh('bpf', x2, ya, label='Markovianity_A',theta=th,phi=ph) #3
     #a.plot_coh('bpf', x2, yb, label='Markovianity_B',theta=th,phi=ph) #3
     # a.plot_coh('pd', x1, ya, label='Markovianity_A',theta=th,phi=ph) #1
     # a.plot_coh('pd', x1, yb, label='Markovianity_B',theta=th,phi=ph) #1
-    plt.show()
+    #plt.show()
 
-    sys.exit()
+    #sys.exit()
 
-    a.plot_storaged('adg',True)
-    a.plot_theoric(x1,'adg',theta=pi/2,phi=0)
+    # a.plot_storaged('adg',True)
+    # a.plot_theoric(x1,'adg',theta=pi/2,phi=0)
+    # plt.legend(loc=1)
+    # plt.show()
+# 
+    # a.plot_storaged('ad',True)
+    # a.plot_theoric(x1,'ad',theta=pi/2,phi=0)
+    # plt.legend(loc=1)
+    # plt.show()
+# 
+    # a.plot_storaged('pf',True)
+    # a.plot_theoric(x1,'pf',theta=pi/2,phi=0)
+    # plt.legend(loc=1)
+    # plt.show()
+
+    #a.plot_storaged('pd',False)
+    #a.plot_theoric(x1,'pd',theta=pi/2,phi=0)
+    #plt.legend(loc=1)
+    #plt.show()
+#
+    #a.plot_storaged('bf',True)
+    #a.plot_theoric(x1,'bf',theta=pi/2,phi=pi/2)
+    #plt.legend(loc=1)
+    #plt.show()
+
+    a.plot_storaged('bpf',False)
+    #a.plot_coh('bpf', xa, ya, label='Markovianity_A',theta=th,phi=ph)
+    #a.plot_coh('pd', xb, yb, label='Markovianity_B',theta=th,phi=ph) #2
+
+    a.plot_theoric(x1,'bpf',theta=pi/2,phi=0.0,descript='isometria')
+    a.plot_theoric(xa,'bpf',theta=pi/2,phi=0.0,descript='isometria_A')
+    a.plot_theoric(xb,'bpf',theta=pi/2,phi=0.0,descript='isometria_B')
     plt.legend(loc=1)
     plt.show()
-
-    a.plot_storaged('ad',True)
-    a.plot_theoric(x1,'ad',theta=pi/2,phi=0)
-    plt.legend(loc=1)
-    plt.show()
-
-    a.plot_storaged('pf',True)
-    a.plot_theoric(x1,'pf',theta=pi/2,phi=0)
-    plt.legend(loc=1)
-    plt.show()
-
-    a.plot_storaged('pd',False)
-    a.plot_theoric(x1,'pd',theta=pi/2,phi=0)
-    plt.legend(loc=1)
-    plt.show()
-
-    a.plot_storaged('bf',True)
-    a.plot_theoric(x1,'bf',theta=pi/2,phi=pi/2)
-    plt.legend(loc=1)
-    plt.show()
-
-    a.plot_storaged('bpf',True)
-    a.plot_theoric(x1,'bpf',theta=pi/2,phi=0.0)
-    plt.legend(loc=1)
-    plt.show()
-
+    s.exit()
     a.plot_storaged('d',True)
     a.plot_theoric(x1,'d',theta=pi/2,phi=0)
     plt.legend(loc=1)

@@ -63,7 +63,8 @@ class Simulate(object):
 
     def plot_theoric_map(self, theta, phi):
         a = tm()
-        a.plot_theoric(self.list_p,self.map_name,theta,phi)
+        descript = 'isometria'
+        a.plot_theoric(self.list_p,self.map_name,theta,phi, descript)
 
     def read_data(self, path):
         with open(path, 'rb') as f:
@@ -279,7 +280,8 @@ class Simulate(object):
         #coerencias_R = []
         coerencias_L = []
         print('list_t = ', self.list_p)
-        self.list_p = get_list_p_noMarkov(self.list_p,'Bellomo')
+        #self.list_p = get_list_p_noMarkov(self.list_p,'Bellomo')
+        self.list_p = get_list_p_noMarkov(self.list_p,'Ana')
         print('list_t = ', self.list_p)
         #self.list_p = [i/max(self.list_p) for i in self.list_p]
         pretrain = True
@@ -436,9 +438,9 @@ def main():
   
     n_qubits = 2
     d_rho_A = 2
-    list_p = np.linspace(0,1,3)
-    epochs = 1
-    step_to_start = 1
+    list_p = np.linspace(0,1,21)
+    epochs = 120
+    step_to_start = 80
     markovianity = True
     rho_AB = QCH.rho_AB_pd
     
@@ -448,8 +450,8 @@ def main():
     #print(rho)
     #sys.exit()
 
-    S.run_calcs_noMarkov(True, pi/2, 0)
-    #S.run_calcs(True, pi/2, 0)
+    #S.run_calcs_noMarkov(True, pi/2, 0)
+    S.run_calcs(True, pi/2, 0)
     
     #phis = [0,pi,pi/1.5,pi/2,pi/3,pi/4,pi/5]
     #S.run_sequential_bf(phis)
