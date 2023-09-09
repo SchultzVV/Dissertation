@@ -440,15 +440,15 @@ def main():
     epochs = 1
     step_to_start = 1
     markovianity = True
-    rho_AB = QCH.rho_AB_l
+    rho_AB = QCH.rho_AB_pd
     
-    S = Simulate('bpf', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
-    rho = np.array(S.reload_rho('ad', markovianity))
+    S = Simulate('pd', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
+    #rho = np.array(S.reload_rho('pd', markovianity))
     #S.plot_bloch(rho)
-    print(rho)
-    sys.exit()
+    #print(rho)
+    #sys.exit()
 
-    S.run_calcs_noMarkov(False, pi/2, 0)
+    S.run_calcs_noMarkov(True, pi/2, 0)
     #S.run_calcs(True, pi/2, 0)
     
     #phis = [0,pi,pi/1.5,pi/2,pi/3,pi/4,pi/5]
