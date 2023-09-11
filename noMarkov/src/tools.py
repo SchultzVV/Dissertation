@@ -193,3 +193,21 @@ werner = werner_state(-0.8, -0.8, -0.8)
 Mais=(cb(2,0)+cb(2,1))/sqrt(2)
 Menos=(cb(2,0)-cb(2,1))/sqrt(2)
 werner
+
+def werner_state_t(c1, c2, c3, p):
+    # c = [-0.8,-0.8,-0.8]
+    # c11 = c1*(1-p)**2
+    # c22 = c2
+    # c33 = c3*(1-p)**2
+    c11 = c1*(1-p)**2
+    c22 = c2*(1-p)**2
+    c33 = c3
+    c = [c11, c22, c33]
+    index = 0
+    rho = np.zeros((4,4),dtype=complex)
+    for i in range(len(rho)):
+        rho[i,i] = 1
+    for i in c:
+        index += 1
+        rho += TensorProduct(i*Pauli(index),Pauli(index))
+    return rho

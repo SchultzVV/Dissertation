@@ -258,7 +258,10 @@ class Simulate(object):
                 filename = f'data/{self.map_name}/paramsP_{p:.2f}theta_{theta:.2f}_phi{phi:.2f}.pkl'
                 if os.path.isfile(filename):
                     print(f'O arquivo {filename} já existe. Não salve novamente.')
+                    with open(filename, 'wb') as f:
+                        pickle.dump(data, f)
                     pass
+
                 else:
                     with open(filename, 'wb') as f:
                         pickle.dump(data, f)
