@@ -51,7 +51,7 @@ def RHO_t_NM(state,J):
     tp2 = TP(K_1(J),K_0(J))
     return tp1*proj(state)*tp1.T + tp2*proj(state)*tp2.T
 
-def calculate_entanglement_old(rho):
+def calculate_entanglement(rho):
     # Compute the spin-flipped counterpart
     sigma_y = Matrix([[0, -1j], [1j, 0]])
     rho_tilde = np.kron(sigma_y, sigma_y) @ np.conj(rho.T) @ np.kron(sigma_y, sigma_y)
@@ -68,62 +68,6 @@ def calculate_entanglement_old(rho):
 
     return entanglement
 
-
-
-def calculate_entanglement2(rho):
-    """Calculates the von Neumann entropy of a quantum state using the alternative formula.
-    
-    Parameters:
-    rho (array-like or Matrix): Density operator of the quantum state.
-    
-    Returns:
-    float: Von Neumann entropy calculated using the alternative formula.
-    """
-    rho_array = np.array(rho)  # Convert to NumPy array
-    
-    #if not is_numeric_matrix(rho_array) or has_non_numeric_values(rho_array):
-    #    raise ValueError("The input matrix must be numeric and free of non-numeric values.")
-    
-    #if not is_hermitian(rho_array):
-    #    raise ValueError("The input matrix must be Hermitian (self-adjoint).")
-    
-    # Construct the spin-flipped counterpart of rho
-    sigma_y = np.array([[0, -1j], [1j, 0]])
-    rho_tilde = np.kron(sigma_y, sigma_y) @ rho_array.conj().T @ np.kron(sigma_y, sigma_y)
-    
-    # Calculate the eigenvalues of rho_tilde
-    eigenvalues = np.linalg.eigvalsh(rho_tilde)
-    
-    # Sort the eigenvalues in descending order
-    eigenvalues_sorted = np.sort(eigenvalues)[::-1]
-    
-    # Calculate the alternative von Neumann entropy formula
-    entropy = max(0, np.sqrt(eigenvalues_sorted[0]) - np.sqrt(eigenvalues_sorted[1]) -
-                   np.sqrt(eigenvalues_sorted[2]) - np.sqrt(eigenvalues_sorted[3]))
-    
-    return entropy
-
-
-# Função para calcular o emaranhamento
-def calculate_entanglement(rho):
-    rho_sqrt = rho.applyfunc(sympify)  # Convert all matrix elements to sympy expressions
-    eigenvalues = rho_sqrt.eigenvals()  # Calculate eigenvalues using SymPy's eigenvals method
-
-    eigenvalues_real = [val for val in eigenvalues if val.is_real]
-    eigenvalues_complex = [val for val in eigenvalues if not val.is_real]
-    
-    def custom_max(iterable):
-        max_val = None
-        for val in iterable:
-            if max_val is None or val > max_val:
-                max_val = val
-        return max_val
-    
-    max_real = custom_max(eigenvalues_real)
-    max_complex = custom_max(eigenvalues_complex)
-
-    entanglement = max(0, max_real - sum([sqrt(val) for val in eigenvalues_complex]))
-    return entanglement
 
 def get_list_p_noMarkov(list_p):
     lamb = 0.01

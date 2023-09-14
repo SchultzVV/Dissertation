@@ -29,7 +29,8 @@ werner = werner_state(-0.8, -0.8, -0.8)
 #stical modeling 
 Mais=(cb(2,0)+cb(2,1))/sqrt(2)
 Menos=(cb(2,0)-cb(2,1))/sqrt(2)
-#werner
+#print(werner)
+#s.exit()
 
 '''phase flip'''
 def K_0(J):
@@ -51,6 +52,8 @@ def RHO_t_NM(state,J):
     tp2 = TP(K_1(J),K_0(J))
     return tp1*proj(state)*tp1.T + tp2*proj(state)*tp2.T
 
+print(RHO_t_NM(werner,1))
+s.exit()
 def calculate_entanglement_old(rho):
     # Compute the spin-flipped counterpart
     sigma_y = Matrix([[0, -1j], [1j, 0]])

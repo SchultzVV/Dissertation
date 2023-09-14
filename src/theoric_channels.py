@@ -254,7 +254,10 @@ class TheoricMaps():
             path = f'noMarkov/data/{map_name}/coerencia_L_e_R.pkl'
             rho_l = self.read_data(path)[0]#.detach().numpy()
         print(path)
-        plt.scatter(np.linspace(0,1,len(rho_l)),rho_l,label='protocolo')
+        if map_name == 'l':
+            plt.scatter(np.linspace(0,1.6,len(rho_l)),rho_l,label=map_name)
+        else:
+            plt.scatter(np.linspace(0,1,len(rho_l)),rho_l,label=map_name)
 
     
     def plot_storaged2(self, map_name,markovianity):
@@ -309,16 +312,21 @@ class TheoricMaps():
         m = r"Estado inicial $|\psi(\theta,\phi)\rangle =$ " + psi
         if map_name == 'hw':
             #psi = fr'$\frac(|0\rangle+|1\rangle+|2\rangle\psi({th},{fi})\rangle)$.'
+            # m0 = r"Estado inicial (bpf) $|\psi(\theta,\phi)\rangle = |\psi(\pi/2,\pi/2)\rangle, $"
+            # m1 = r"Estado inicial (bf - pf) $|\psi(\theta,\phi)\rangle =$ " + psi
+            # m2 = r"estado inicial (hw) $|\psi\rangle = \frac{1}{\sqrt{3}}(|0\rangle+|1\rangle+|2\rangle)$"
+            # m = m0+m2
+            # plt.suptitle(m1)
             m = r"Estado inicial $|\psi\rangle = \frac{1}{\sqrt{3}}(|0\rangle+|1\rangle+|2\rangle)$ "
+        # plt.suptitle(fancy_name)
         plt.title(m,usetex=True)
-        plt.suptitle(fancy_name)
         if map_name == 'l':
             plt.xlabel(fr'$\xi$')
         else:
             plt.xlabel('p')
         plt.ylabel('coerência')
-        plt.scatter(list_p,cohs,label=descript)
-        # plt.plot(list_p,cohs,label=descript)
+        # plt.scatter(list_p,cohs,label=descript)
+        plt.plot(list_p,cohs,label=descript)
         plt.title(m)
     
     def plot_all_theoric_space(self,map):
@@ -554,6 +562,13 @@ from numpy import cos, sin, sqrt, pi, exp
 def main():
     from numpy import cos, sin, sqrt, pi, exp
     a = TheoricMaps()
+    x1 = np.linspace(0,1,3)
+
+    a.plot_storaged('pd',True)
+    a.plot_theoric(x1,'pd',theta=pi/2,phi=0,descript='coerência')
+    plt.legend(loc=1)
+    plt.show()
+    sys.exit()
     a.plot_pd()
     a.plot_ad()
     # sys.exit()

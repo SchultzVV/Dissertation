@@ -441,13 +441,13 @@ def main():
   
     n_qubits = 2
     d_rho_A = 2
-    list_p = np.linspace(0,1,21)
+    list_p = np.linspace(0,1.6,21)
     epochs = 120
     step_to_start = 80
     markovianity = True
-    rho_AB = QCH.rho_AB_pd
+    rho_AB = QCH.rho_AB_l
     
-    S = Simulate('pd', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
+    S = Simulate('l', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
     #rho = np.array(S.reload_rho('pd', markovianity))
     #S.plot_bloch(rho)
     #print(rho)
