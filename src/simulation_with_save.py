@@ -10,7 +10,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from torch import tensor
 from numpy import pi
+
 import os
+import matplotlib as mpl
 from matplotlib.widgets import Slider, Button
 import sys
 sys.path.append('runtime-qiskit')
@@ -64,7 +66,8 @@ class Simulate(object):
     def plot_theoric_map(self, theta, phi):
         a = tm()
         descript = 'isometria'
-        a.plot_theoric(self.list_p,self.map_name,theta,phi, descript)
+        x = np.linspace(0,1,300)
+        a.plot_theoric(x, self.map_name, theta, phi, descript)
 
     def read_data(self, path):
         with open(path, 'rb') as f:
@@ -205,6 +208,26 @@ class Simulate(object):
         coerencias_L.append(coh_L)
 
         return coerencias_L, coerencias_R
+    
+    def name_changer(self, map_name):
+        if map_name == 'bpf':
+            return 'bit-phase-flip'
+        if map_name == 'ad':
+            return 'amplitude-damping'
+        if map_name == 'bf':
+            return 'bit-flip'
+        if map_name == 'pf':
+            return 'phase-flip'
+        if map_name == 'pd':
+            return 'phase-damping'
+        if map_name == 'd':
+            return 'depolarizing'
+        if map_name == 'adg':
+            return 'generalized-amplitude-damping'
+        if map_name == 'l':
+            return 'Lorentz'
+        if map_name == 'hw':
+            return 'Heisenberg Weyl-dephasing'
 
     def plots(self, list_p, coerencias_L):
         print(list_p)
@@ -216,15 +239,30 @@ class Simulate(object):
         plt.savefig(f'figures/automatic/{self.map_name}.png')
         plt.show()
 
-    def plots_markov(self, list_p, coerencias_L):
+    def plots_markov(self, list_p, coerencias_L, theta, phi):
         print(list_p)
         print(len(coerencias_L))
         x = [i for i in range(len(coerencias_L))]
-        plt.scatter(x, coerencias_L, label='simulação')
-        plt.xlabel(' p ')
+        plt.scatter(list_p, coerencias_L, label='simulação')
+        plt.xlabel(' t ')
         plt.ylabel(' Coerência ')
         plt.legend(loc=0)
         plt.savefig(f'noMarkov/figures/automatic/{self.map_name}.png')
+        mpl.rcParams['text.usetex'] = True
+        th = f'{str(theta)[0:4]}'
+        fi = f'{str(phi)[0:4]}'
+        fancy_name = self.name_changer(self.map_name)
+        psi = fr'$|\psi({th},{fi})\rangle$.'
+        m = r"Estado inicial $|\psi(\theta,\phi)\rangle =$ " + psi
+        if self.map_name == 'hw':
+            #psi = fr'$\frac(|0\rangle+|1\rangle+|2\rangle\psi({th},{fi})\rangle)$.'
+            m = r"Estado inicial $|\psi\rangle = \frac{1}{\sqrt{3}}(|0\rangle+|1\rangle+|2\rangle)$ "
+        plt.title(m,usetex=True)
+        plt.suptitle(fancy_name)
+        if self.map_name == 'l':
+            plt.xlabel(fr'$\xi$')
+        else:
+            plt.xlabel('t')
         plt.show()
 
 
@@ -283,10 +321,12 @@ class Simulate(object):
         #coerencias_R = []
         coerencias_L = []
         print('list_t = ', self.list_p)
+        x = self.list_p
         #self.list_p = get_list_p_noMarkov(self.list_p,'Bellomo')
         self.list_p = get_list_p_noMarkov(self.list_p,'Ana')
         print('list_t = ', self.list_p)
-        #self.list_p = [i/max(self.list_p) for i in self.list_p]
+        self.list_p = [i/max(self.list_p) for i in self.list_p]
+        print('list_t = ', self.list_p)
         pretrain = True
         count = 0
         _, params, _, _ = self.start_things(self.depht)
@@ -326,8 +366,8 @@ class Simulate(object):
         if save:
             with open(f'data/noMarkov/{self.map_name}/coerencia_L_e_R.pkl', 'wb') as f:
                 pickle.dump(mylist, f)
-        self.plot_theoric_map(theta, phi)
-        self.plots_markov(self.list_p, self.coerencias_L)
+        # self.plot_theoric_map(theta, phi)
+        self.plots_markov(self.list_p, self.coerencias_L, theta, phi)
 
     def rho_from_qc(self, best_params):
         params = best_params.clone().detach().numpy()
@@ -441,20 +481,20 @@ def main():
   
     n_qubits = 2
     d_rho_A = 2
-    list_p = np.linspace(0,1.6,21)
+    list_p = np.linspace(0,100,21)
     epochs = 120
     step_to_start = 80
     markovianity = True
-    rho_AB = QCH.rho_AB_l
+    rho_AB = QCH.rho_AB_pf
     
-    S = Simulate('l', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
+    S = Simulate('pf', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
     #rho = np.array(S.reload_rho('pd', markovianity))
     #S.plot_bloch(rho)
     #print(rho)
     #sys.exit()
 
-    #S.run_calcs_noMarkov(True, pi/2, 0)
-    S.run_calcs(True, pi/2, 0)
+    S.run_calcs_noMarkov(True, pi/2, 0)
+    # S.run_calcs(True, pi/2, 0)
     
     #phis = [0,pi,pi/1.5,pi/2,pi/3,pi/4,pi/5]
     #S.run_sequential_bf(phis)

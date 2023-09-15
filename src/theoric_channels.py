@@ -236,28 +236,35 @@ class TheoricMaps():
         return state
     
 
-    def plot_storaged(self, map_name,markovianity):
+    def plot_storaged(self, map_name, markovianity):
         #path = f'../data/{map}/{map}-coherences.pkl'
         if markovianity:
             print(markovianity)
-            try:
-                path = f'data/{map_name}/coerencia_L_e_R.pkl'
-                rho_l = self.read_data(path)[0]#.detach().numpy()
-            except:
-
-                path = f'data/{map_name}/ClassTestcasa.pkl'
-                rho_l = self.read_data(path)[0]#.detach().numpy()
-            #if map_name == 'l':
-            #    path = f'data/{map_name}/ClassTestcasa.pkl'
-            #    rho_l = self.read_data(path)[0]#.detach().numpy()
+            path = f'data/{map_name}/coerencia_L_e_R.pkl'
+            coh_l = self.read_data(path)[0]#.detach().numpy()
+            if map_name == 'l':
+               # plt.scatter(np.linspace(0,1.6,len(coh_l)),coh_l,label=map_name)
+               plt.plot(np.linspace(0,1.6,len(coh_l)),coh_l,label=map_name)
+            else:
+                plt.scatter(np.linspace(0,1,len(coh_l)),coh_l,label=map_name+' Makorv')
+                # plt.plot(np.linspace(0,1,len(coh_l)),coh_l,label=map_name)
         else:
-            path = f'noMarkov/data/{map_name}/coerencia_L_e_R.pkl'
-            rho_l = self.read_data(path)[0]#.detach().numpy()
+            path = f'data/noMarkov/{map_name}/coerencia_L_e_R.pkl'
+            coh_l = self.read_data(path)[0]#.detach().numpy()
+            if map_name == 'l':
+                # plt.scatter(np.linspace(0,1.6,len(coh_l)),coh_l,label=map_name)
+                plt.plot(np.linspace(0,1.6,len(coh_l)),coh_l,label=map_name+' N - Makorv')
+            else:
+                # plt.scatter(np.linspace(0,1,len(coh_l)),coh_l,label=map_name)
+                x2 = np.linspace(0.01,100,len(coh_l))
+                xa = np.array([self.non_markov_t_Ana(0.01,i) for i in x2])
+                plt.plot(x2,coh_l,label=map_name+' N - Makorv')
+                plt.xscale('log')
+                # plt.scatter(xa,coh_l,label=map_name+' N - Makorv')
+                # plt.plot(xa,coh_l)#,label='x2')
+                # plt.scatter(xa,coh_l,label='xa')
         print(path)
-        if map_name == 'l':
-            plt.scatter(np.linspace(0,1.6,len(rho_l)),rho_l,label=map_name)
-        else:
-            plt.scatter(np.linspace(0,1,len(rho_l)),rho_l,label=map_name)
+        
 
     
     def plot_storaged2(self, map_name,markovianity):
@@ -265,15 +272,15 @@ class TheoricMaps():
         if markovianity:
             try:
                 path = f'data/{map_name}/coerencia_L_e_R.pkl'
-                rho_l = self.read_data(path)[0]#.detach().numpy()
+                coh_l = self.read_data(path)[0]#.detach().numpy()
             except:
 
                 path = f'data/{map_name}/ClassTestcasa.pkl'
-                rho_l = self.read_data(path)[0]#.detach().numpy()
+                coh_l = self.read_data(path)[0]#.detach().numpy()
         else:
             path = f'noMarkov/data/{map_name}/coerencia_L_e_R.pkl'
-            rho_l = self.read_data(path)[0]#.detach().numpy()
-        plt.plot(np.linspace(0,1,len(rho_l)),rho_l,label=f'{map_name}')
+            coh_l = self.read_data(path)[0]#.detach().numpy()
+        plt.plot(np.linspace(0,1,len(coh_l)),coh_l,label=f'{map_name}')
 
     def reload_rho(self, map_name, markovianity):
         if markovianity:
@@ -318,7 +325,7 @@ class TheoricMaps():
             # m = m0+m2
             # plt.suptitle(m1)
             m = r"Estado inicial $|\psi\rangle = \frac{1}{\sqrt{3}}(|0\rangle+|1\rangle+|2\rangle)$ "
-        # plt.suptitle(fancy_name)
+        plt.suptitle(fancy_name)
         plt.title(m,usetex=True)
         if map_name == 'l':
             plt.xlabel(fr'$\xi$')
@@ -327,6 +334,44 @@ class TheoricMaps():
         plt.ylabel('coerência')
         # plt.scatter(list_p,cohs,label=descript)
         plt.plot(list_p,cohs,label=descript)
+        plt.title(m)
+
+    def plot_theoric_n_Markov(self, list_p, map_name, theta, phi, descript):
+        cohs = []
+        x = np.linspace(0,pi/2,len(list_p))
+        if map_name == 'l':
+            list_p = np.linspace(0,pi/2,len(list_p))
+        for pp in list_p:
+            rho = self.map_choser(map_name)(theta,phi,pp)
+            rho_numpy = np.array(rho.tolist(), dtype=np.complex64)
+            coh = self.coh_l1(rho_numpy)
+            cohs.append(coh)
+        #m = f'Estado inicial, theta =  {str(theta)[0:4]}, phi = {str(phi)[0:4]}'
+        mpl.rcParams['text.usetex'] = True
+        th = f'{str(theta)[0:4]}'
+        fi = f'{str(phi)[0:4]}'
+        # fancy_name = self.name_changer(map_name)
+        psi = fr'$|\psi({th},{fi})\rangle$.'
+        m = r"Estado inicial $|\psi(\theta,\phi)\rangle =$ " + psi
+        if map_name == 'hw':
+            #psi = fr'$\frac(|0\rangle+|1\rangle+|2\rangle\psi({th},{fi})\rangle)$.'
+            # m0 = r"Estado inicial (bpf) $|\psi(\theta,\phi)\rangle = |\psi(\pi/2,\pi/2)\rangle, $"
+            # m1 = r"Estado inicial (bf - pf) $|\psi(\theta,\phi)\rangle =$ " + psi
+            # m2 = r"estado inicial (hw) $|\psi\rangle = \frac{1}{\sqrt{3}}(|0\rangle+|1\rangle+|2\rangle)$"
+            # m = m0+m2
+            # plt.suptitle(m1)
+            m = r"Estado inicial $|\psi\rangle = \frac{1}{\sqrt{3}}(|0\rangle+|1\rangle+|2\rangle)$ "
+        # plt.suptitle(fancy_name)
+        plt.title(m,usetex=True)
+        if map_name == 'l':
+            plt.xlabel(fr'$\xi$')
+        else:
+            plt.xlabel('p')
+        plt.ylabel('coerência')
+        # plt.scatter(list_p,cohs,label=descript)
+        x2 = np.linspace(0.01,100,len(list_p))
+        plt.scatter(x2,cohs,label=descript)
+        # plt.plot(list_p,cohs,label=descript)
         plt.title(m)
     
     def plot_all_theoric_space(self,map):
@@ -375,13 +420,7 @@ class TheoricMaps():
         coherence = abs(inner_product)/(norm_a1*norm_a2)
         # Retorna a expressão LaTeX da coerência
         return coherence
-    
-    def bpf(self, p, theta, phi):
-        # theta = np.pi/2
-        # phi = np.pi/2
-        p1 = abs((1-p)*cos(theta/2)*exp(-1j*phi)*sin(theta/2)-p*exp(1j*phi)*sin(theta/2)*cos(theta/2))
-        p2 = abs((1-p)*cos(theta/2)*exp(1j*phi)*sin(theta/2)-p*exp(-1j*phi)*sin(theta/2)*cos(theta/2))
-        return p1+p2
+#------------------------------------------------------------------------------------------------------    
 
     def ad(self, p, theta, phi):
         p1 = abs(sqrt(1-p)*cos(theta/2)*exp(-1j*phi)*sin(theta/2))
@@ -393,14 +432,11 @@ class TheoricMaps():
         return sqrt(2)*abs(np.sin(theta/2)) * abs(np.sqrt(p) * np.exp(1j * phi) + np.sqrt(1 - p) * np.exp(1j * phi))
         #return 2*sin(theta/2)*cos(theta/2)*sqrt(4*(p**2)*(cos(phi)**2)-4*p*(cos(phi)**2)+1) # bf
     
-    def bf(self, p, theta, phi):
-        return 0
+    def pd_uat(self, p, theta, phi):
+        #theta = np.pi/2
+        #phi = 0        
+        return 2*np.sqrt(1-p)*np.sin(theta/2)*np.cos(theta/2)
 
-    def pf(self, p, theta, phi):
-        p1 = abs(sqrt(1-p)*cos(theta/2)*exp(-1j*phi)*sin(theta/2))
-        p2 = abs(sqrt(1-p)*cos(theta/2)*exp(1j*phi)*sin(theta/2))
-        return p1+p2
-    
     def pd(self, p, theta, phi):
         p1 = abs(sqrt(1-p)*cos(theta/2)*exp(-1j*phi)*sin(theta/2))
         p2 = abs(sqrt(1-p)*cos(theta/2)*exp(1j*phi)*sin(theta/2))
@@ -411,6 +447,21 @@ class TheoricMaps():
         # phi = 0        
         return (1-p)*np.sin(theta/2)*np.cos(theta/2)*np.sqrt(np.cos(phi)-np.sin(phi))
 
+    def bf(self, p, theta, phi):
+        return 0
+
+    def pf(self, p, theta, phi):
+        p1 = abs(sqrt(1-p)*cos(theta/2)*exp(-1j*phi)*sin(theta/2))
+        p2 = abs(sqrt(1-p)*cos(theta/2)*exp(1j*phi)*sin(theta/2))
+        return p1+p2
+
+    def bpf(self, p, theta, phi):
+        # theta = np.pi/2
+        # phi = np.pi/2
+        p1 = abs((1-p)*cos(theta/2)*exp(-1j*phi)*sin(theta/2)-p*exp(1j*phi)*sin(theta/2)*cos(theta/2))
+        p2 = abs((1-p)*cos(theta/2)*exp(1j*phi)*sin(theta/2)-p*exp(-1j*phi)*sin(theta/2)*cos(theta/2))
+        return p1+p2
+    
     def d(self, p, theta, phi):
         #theta = np.pi/2
         #phi = 0
@@ -427,10 +478,7 @@ class TheoricMaps():
         #phi = 0
         return np.sqrt(5)*((3*p-1)/6) #'hw'
     
-    def pd(self, p, theta, phi):
-        #theta = np.pi/2
-        #phi = 0        
-        return 2*np.sqrt(1-p)*np.sin(theta/2)*np.cos(theta/2)
+    
     
     
 
@@ -473,8 +521,8 @@ class TheoricMaps():
         else:
             plt.xlabel('p')
         plt.ylabel('coerência')
-        # plt.plot(x,y,label=label)
-        plt.scatter(x,y,label=label)
+        plt.plot(x,y,label=label)
+        # plt.scatter(x,y,label=label)
         # plt.xscale('log')
         plt.ylabel('coerência')
         plt.xlabel('t')
@@ -556,17 +604,44 @@ class TheoricMaps():
         #plt.scatter(x1,y);plt.scatter(x,y);plt.xscale('log');plt.title()
         plt.show()
 
+    def plot_all_results(self, map_name):
+        lamb = 0.01
+        x1 = np.linspace(0,1,300)
+        x2 = np.linspace(0.01,100,21)
+        xa = np.array([self.non_markov_t_Ana(lamb,i) for i in x2])
+        plt.ylabel('coerência')
+        self.plot_storaged('bf',True)
+        self.plot_storaged('bf',False)
+        self.plot_theoric(x1,'bf',theta=pi/2,phi=pi/2,descript='Teórico')
+        self.plot_theoric(xa,'bf',theta=pi/2,phi=pi/2,descript='Teórico2')
+        plt.xlabel('p (Markov) ; t(n-Markov)')
+        # a.plot_theoric_n_Markov(xa,'bf',theta=pi/2,phi=pi/2,descript='bf - n Markov')
+        plt.xscale('log')
+        # a.plot_theoric(xa,'bf',theta=pi/2,phi=pi/2,descript='bf no Markov')
+        plt.legend()
+        plt.xlim(0.01)
+        plt.show()
+
 from numpy import cos, sin, sqrt, pi, exp
 
 
 def main():
     from numpy import cos, sin, sqrt, pi, exp
     a = TheoricMaps()
-    x1 = np.linspace(0,1,3)
-
-    a.plot_storaged('pd',True)
-    a.plot_theoric(x1,'pd',theta=pi/2,phi=0,descript='coerência')
-    plt.legend(loc=1)
+    lamb = 0.01
+    x1 = np.linspace(0,1,300)
+    x2 = np.linspace(0.01,100,21)
+    xa = np.array([a.non_markov_t_Ana(lamb,i) for i in x2])
+    plt.ylabel('coerência')
+    a.plot_storaged('bf',False)
+    a.plot_storaged('bf',True)
+    a.plot_theoric(x1,'bf',theta=pi/2,phi=pi/2,descript='Teórico')
+    plt.xlabel('p (Markov) ; p(t) (n-Markov)')
+    # a.plot_theoric_n_Markov(xa,'bf',theta=pi/2,phi=pi/2,descript='bf - n Markov')
+    plt.xscale('log')
+    # a.plot_theoric(xa,'bf',theta=pi/2,phi=pi/2,descript='bf no Markov')
+    plt.legend()
+    plt.xlim(0.01)
     plt.show()
     sys.exit()
     a.plot_pd()
