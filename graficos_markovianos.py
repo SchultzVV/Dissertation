@@ -58,7 +58,7 @@ plt.show()
 
 #plt.show()
 a.plot_theoric(x1,'hw',theta=pi/2,phi=0,descript='H-W dephasing')
-a.plot_storaged('h',False)
+a.plot_storaged('hw',False)
 plt.legend(loc=1)
 
 plt.show()
