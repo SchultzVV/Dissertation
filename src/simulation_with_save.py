@@ -317,14 +317,28 @@ class Simulate(object):
         self.plot_theoric_map(theta, phi)
         self.plots(self.list_p, self.coerencias_L)
     
-    def run_calcs_noMarkov(self, save, theta, phi):#, gamma=None):
+    def run_calcs_noMarkov(self, save, theta, phi, continuous_coh):#, gamma=None):
         #coerencias_R = []
-        coerencias_L = []
+        caminho = f'data/noMarkov/{self.map_name}/coerencia_L_e_R.pkl'
+        if continuous_coh:
+            try:
+                coerencias_L = self.read_data(caminho)[0]
+                if len(coerencias_L) < len(self.list_p):
+                    print(len(self.list_p))
+                    print(len(coerencias_L))
+                    faltam = len(self.list_p)-len(coerencias_L)
+                    print('ainda faltam',faltam)
+                    self.list_p = self.list_p[len(coerencias_L):]
+                    print(len(self.list_p))
+            except:
+                coerencias_L =[]    
+        else:
+            coerencias_L =[]
+        # sys.exit()
         print('list_t = ', self.list_p)
         x = self.list_p
         #self.list_p = get_list_p_noMarkov(self.list_p,'Bellomo')
         self.list_p = get_list_p_noMarkov(self.list_p,'Ana')
-        print('list_t = ', self.list_p)
         self.list_p = [i/max(self.list_p) for i in self.list_p]
         print('list_t = ', self.list_p)
         pretrain = True
@@ -362,11 +376,11 @@ class Simulate(object):
             rho = self.tomograph()
             #print(rho)
             self.coerencias_L, self.coerencias_R = self.results(rho, self.coerencias_R, coerencias_L)
-        mylist = [self.coerencias_L, self.coerencias_R]
-        if save:
-            with open(f'data/noMarkov/{self.map_name}/coerencia_L_e_R.pkl', 'wb') as f:
-                pickle.dump(mylist, f)
-        # self.plot_theoric_map(theta, phi)
+            mylist = [self.coerencias_L, self.coerencias_R]
+            if save:
+                with open(caminho, 'wb') as f:
+                    pickle.dump(mylist, f)
+        self.plot_theoric_map(theta, phi)
         self.plots_markov(self.list_p, self.coerencias_L, theta, phi)
 
     def rho_from_qc(self, best_params):
@@ -483,7 +497,7 @@ def main():
     d_rho_A = 2
     theta = pi/2
     phi = 0
-    list_p = np.linspace(0.1,1000,50)
+    list_p = np.linspace(0.1,1000,21)
     markovianity = False
     saving = True
     epochs = 120
@@ -496,7 +510,7 @@ def main():
     #print(rho)
     #sys.exit()
     if not markovianity:
-        S.run_calcs_noMarkov(saving, theta, phi)
+        S.run_calcs_noMarkov(saving, theta, phi, True)
     if markovianity:
         S.run_calcs(saving, theta, phi)
     

@@ -5,16 +5,16 @@ from src.theoric_channels import *
 a = TheoricMaps()
 
 lamb = 0.01
-list_1 = np.linspace(0.01,1,50)
-list_2 = np.linspace(0.01,1000,50)
+list_1 = np.linspace(0.01,1,21)
+list_2 = np.linspace(0.01,1000,21)
 
 
 list_of_maps = ['bf','pf','l']
 list_of_maps = ['l']
 list_of_maps = ['ad','pd','adg','bf','bpf','d','l','hw']
 list_of_maps = ['ad','pd','adg','bf','pf','bpf','d']
-list_of_maps = ['ad']
 list_of_maps = ['pd','adg','bf','pf','bpf','d','l','hw']
+list_of_maps = ['ad']
 th = pi/2
 ph = 0
 for map in list_of_maps:
