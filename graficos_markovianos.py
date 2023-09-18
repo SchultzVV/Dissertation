@@ -5,7 +5,7 @@ from src.theoric_channels import *
 a = TheoricMaps()
 
 lamb = 0.01
-list_1 = np.linspace(0,1,50)
+list_1 = np.linspace(0.01,1,50)
 list_2 = np.linspace(0.01,1000,50)
 
 

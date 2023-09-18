@@ -343,7 +343,7 @@ class TheoricMaps():
     def plot_theoric_n_Markov(self, list_p, map_name, theta, phi, descript):
         cohs = []
         # x2 = np.linspace(0.01,1000,len(list_p))
-        xa = np.sort(np.array([self.non_markov_t_Ana(0.01,i) for i in list_p]))
+        xa = np.sort(np.array([self.non_markov_t_Ana(0.001,i) for i in list_p]))
         # xa = np.array([self.non_markov_t_Ana(0.01,i) for i in x2])
         if map_name != 'l':
             xa = [i/max(xa) for i in xa]

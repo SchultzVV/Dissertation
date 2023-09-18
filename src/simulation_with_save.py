@@ -483,7 +483,7 @@ def main():
     d_rho_A = 2
     theta = pi/2
     phi = 0
-    list_p = np.linspace(0.1,1000,21)
+    list_p = np.linspace(0.1,1000,50)
     markovianity = False
     saving = True
     epochs = 120
