@@ -251,16 +251,18 @@ class TheoricMaps():
         else:
             path = f'data/noMarkov/{map_name}/coerencia_L_e_R.pkl'
             coh_l = self.read_data(path)[0]#.detach().numpy()
-            x2 = np.linspace(0.01,100,len(coh_l))
+            print(len(coh_l))
+            x2 = np.linspace(0.01,1000,len(coh_l))
             if map_name == 'l':
                 # plt.scatter(np.linspace(0,1.6,len(coh_l)),coh_l,label='Simulação N - Makorv')
-                plt.scatter(np.linspace(0.01,100,len(coh_l)),coh_l,label='Simulação não Markoviana')
+                plt.scatter(np.linspace(0.01,1000,len(coh_l)),coh_l,label='Simulação não Markoviana')
             else:
                 # plt.scatter(np.linspace(0,1,len(coh_l)),coh_l,label=map_name)
-                x2 = np.linspace(0.01,100,len(coh_l))
+                x2 = np.linspace(0,1000,len(coh_l))
                 xa = np.array([self.non_markov_t_Ana(0.01,i) for i in x2])
-                plt.plot(x2,coh_l)#,label=map_name+' N - Makorv')
+                # plt.plot(x2,coh_l)#,label=map_name+' N - Makorv')
                 plt.scatter(x2,coh_l,label='Simulação não Markoviana')
+                # plt.scatter(xa,coh_l,label='Simulação não Markoviana')
                 # plt.xscale('log')
                 # plt.scatter(xa,coh_l,label=map_name+' N - Makorv')
                 # plt.plot(xa,coh_l)#,label='x2')
@@ -339,12 +341,53 @@ class TheoricMaps():
         plt.title(m)
 
     def plot_theoric_n_Markov(self, list_p, map_name, theta, phi, descript):
+        cohs = []
+        # x2 = np.linspace(0.01,1000,len(list_p))
+        xa = np.sort(np.array([self.non_markov_t_Ana(0.01,i) for i in list_p]))
+        # xa = np.array([self.non_markov_t_Ana(0.01,i) for i in x2])
+        if map_name != 'l':
+            xa = [i/max(xa) for i in xa]
+        for pp in xa:
+            rho = self.map_choser(map_name)(theta,phi,pp)
+            rho_numpy = np.array(rho.tolist(), dtype=np.complex64)
+            coh = self.coh_l1(rho_numpy)
+            # print(coh)
+            cohs.append(coh)
+        #m = f'Estado inicial, theta =  {str(theta)[0:4]}, phi = {str(phi)[0:4]}'
+        mpl.rcParams['text.usetex'] = True
+        th = f'{str(theta)[0:4]}'
+        fi = f'{str(phi)[0:4]}'
+        fancy_name = self.name_changer(map_name)
+        psi = fr'$|\psi({th},{fi})\rangle$.'
+        m = r"Estado inicial $|\psi(\theta,\phi)\rangle =$ " + psi
+        if map_name == 'hw':
+            #psi = fr'$\frac(|0\rangle+|1\rangle+|2\rangle\psi({th},{fi})\rangle)$.'
+            # m0 = r"Estado inicial (bpf) $|\psi(\theta,\phi)\rangle = |\psi(\pi/2,\pi/2)\rangle, $"
+            # m1 = r"Estado inicial (bf - pf) $|\psi(\theta,\phi)\rangle =$ " + psi
+            # m2 = r"estado inicial (hw) $|\psi\rangle = \frac{1}{\sqrt{3}}(|0\rangle+|1\rangle+|2\rangle)$"
+            # m = m0+m2
+            # plt.suptitle(m1)
+            m = r"Estado inicial $|\psi\rangle = \frac{1}{\sqrt{3}}(|0\rangle+|1\rangle+|2\rangle)$ "
+        plt.suptitle(fancy_name)
+        plt.title(m,usetex=True)
+        if map_name == 'l':
+            plt.xlabel(fr'$\xi$')
+        else:
+            plt.xlabel('p')
+        plt.ylabel('coerência')
+        # plt.scatter(list_p,cohs,label=descript)
+        # plt.scatter(x2, cohs, label=descript)
+        plt.plot(list_p, cohs, label=descript)
+        plt.title(m)
+
+    def plot_theoric_n_Markov_B(self, list_p, map_name, theta, phi, descript):
         # if map_name == 'l':
             # list_p = np.linspace(0,pi/2,len(list_p))
         cohs = []
         x = np.linspace(0,pi/2,len(list_p))
         x2 = np.linspace(0.01,1000,len(list_p))
-        xa = np.array([self.non_markov_t_Ana(0.01,i) for i in x2])
+        # xa = np.array([self.non_markov_t_Ana(0.01,i) for i in x2])
+        xa = np.array([self.non_markov_t_Bellomo(0.01,i) for i in x2])
         if map_name != 'l':
             xa = [i/max(xa) for i in xa]
         for pp in xa:
@@ -496,7 +539,7 @@ class TheoricMaps():
         return np.sqrt(1-p)*np.sin(np.pi/2)*np.cos(0/2) #'l'
 
     def non_markov_t_Bellomo(self, lamb, t):
-        gamma_0 = 2.8
+        gamma_0 = 6
         d = sqrt(2*gamma_0*lamb-lamb**2)
         result = exp(-lamb*t)*(cos(d*t/2)+(lamb/d)*sin(d*t/2))**2
         return result

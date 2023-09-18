@@ -5,19 +5,16 @@ from src.theoric_channels import *
 a = TheoricMaps()
 
 lamb = 0.01
-x1 = np.linspace(0,1,1000)
+list_1 = np.linspace(0,1,50)
+list_2 = np.linspace(0.01,1000,50)
 
-#x = [i/max(x) for i in x]
-th = np.pi/2
-ph = np.pi/2
-#y1 = a.bpf(x1, th, ph)
-#ya = a.bpf(xa, th, ph)
-#yb = a.bpf(xb, th, ph)
+
 list_of_maps = ['bf','pf','l']
-list_of_maps = ['ad','pd','adg','bf','pf','bpf','d','l','hw']
 list_of_maps = ['l']
 list_of_maps = ['ad','pd','adg','bf','bpf','d','l','hw']
 list_of_maps = ['ad','pd','adg','bf','pf','bpf','d']
+list_of_maps = ['ad']
+list_of_maps = ['pd','adg','bf','pf','bpf','d','l','hw']
 th = pi/2
 ph = 0
 for map in list_of_maps:
@@ -25,10 +22,11 @@ for map in list_of_maps:
         ph = pi/2
     else:
         ph = 0
-    a.plot_theoric(x1,map,theta=th,phi=ph,descript='Teórico Markoviano')
-    #a.plot_storaged(map,True)
-    a.plot_theoric_n_Markov(x1,map,theta=th,phi=ph,descript='Teórico não Markoviano')
-    #a.plot_storaged(map,False)
+    a.plot_theoric(list_1,map,theta=th,phi=ph,descript='Teórico Markoviano')
+    a.plot_storaged(map,True)
+    a.plot_theoric_n_Markov(list_2,map,theta=th,phi=ph,descript='Teórico não Markoviano')
+    # a.plot_theoric_n_Markov_B(x1,map,theta=th,phi=ph,descript='Teórico não Markoviano')
+    a.plot_storaged(map,False)
     if map == 'l':
         plt.xlabel(fr'$\xi$ ; t (n-Markov)')
     else:

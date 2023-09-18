@@ -66,8 +66,8 @@ class Simulate(object):
     def plot_theoric_map(self, theta, phi):
         a = tm()
         descript = 'isometria'
-        x = np.linspace(0,1,300)
-        a.plot_theoric(x, self.map_name, theta, phi, descript)
+        # x = np.linspace(0,1,300)
+        a.plot_theoric(self.list_p, self.map_name, theta, phi, descript)
 
     def read_data(self, path):
         with open(path, 'rb') as f:
@@ -366,7 +366,7 @@ class Simulate(object):
         if save:
             with open(f'data/noMarkov/{self.map_name}/coerencia_L_e_R.pkl', 'wb') as f:
                 pickle.dump(mylist, f)
-        self.plot_theoric_map(theta, phi)
+        # self.plot_theoric_map(theta, phi)
         self.plots_markov(self.list_p, self.coerencias_L, theta, phi)
 
     def rho_from_qc(self, best_params):
@@ -483,10 +483,10 @@ def main():
     d_rho_A = 2
     theta = pi/2
     phi = 0
-    list_p = np.linspace(0,1000,50)
+    list_p = np.linspace(0.1,1000,21)
     markovianity = False
     saving = True
-    epochs = 80
+    epochs = 120
     step_to_start = 80
     
     rho_AB = QCH.rho_AB_ad
@@ -495,9 +495,9 @@ def main():
     #S.plot_bloch(rho)
     #print(rho)
     #sys.exit()
-    if markovianity:
-        S.run_calcs_noMarkov(saving, theta, phi)
     if not markovianity:
+        S.run_calcs_noMarkov(saving, theta, phi)
+    if markovianity:
         S.run_calcs(saving, theta, phi)
     
     #phis = [0,pi,pi/1.5,pi/2,pi/3,pi/4,pi/5]
