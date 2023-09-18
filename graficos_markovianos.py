@@ -5,20 +5,54 @@ from src.theoric_channels import *
 a = TheoricMaps()
 
 lamb = 0.01
-x1 = np.linspace(0,1,21)
+x1 = np.linspace(0,1,1000)
+
 #x = [i/max(x) for i in x]
 th = np.pi/2
 ph = np.pi/2
 #y1 = a.bpf(x1, th, ph)
 #ya = a.bpf(xa, th, ph)
 #yb = a.bpf(xb, th, ph)
+list_of_maps = ['bf','pf','l']
+list_of_maps = ['ad','pd','adg','bf','pf','bpf','d','l','hw']
+list_of_maps = ['l']
+list_of_maps = ['ad','pd','adg','bf','bpf','d','l','hw']
+list_of_maps = ['ad','pd','adg','bf','pf','bpf','d']
+th = pi/2
+ph = 0
+for map in list_of_maps:
+    if map == 'bf':
+        ph = pi/2
+    else:
+        ph = 0
+    a.plot_theoric(x1,map,theta=th,phi=ph,descript='Teórico Markoviano')
+    #a.plot_storaged(map,True)
+    a.plot_theoric_n_Markov(x1,map,theta=th,phi=ph,descript='Teórico não Markoviano')
+    #a.plot_storaged(map,False)
+    if map == 'l':
+        plt.xlabel(fr'$\xi$ ; t (n-Markov)')
+    else:
+        plt.xlabel('p (Markov) ; t (n-Markov)')
+    plt.ylabel('coerência')
 
+    plt.xscale('log')
+    plt.xlim(0.01)
+    plt.legend(loc=0)
+    plt.show()
+sys.exit()    
 
-a.plot_theoric(x1,'ad',theta=pi/2,phi=0,descript='Amplitude Damping')
+a.plot_theoric(x1,'ad',theta=pi/2,phi=0,descript='Teórico Markoviano')
+a.plot_storaged('ad',True)
+a.plot_theoric_n_Markov(x1,'ad',theta=pi/2,phi=0,descript='Teórico não Markoviano')
 a.plot_storaged('ad',False)
+plt.xlabel('p (Markov) ; t (n-Markov)')
+plt.ylabel('coerência')
+
+plt.xscale('log')
+
 plt.legend(loc=1)
 plt.show()
-
+sys.exit()
 a.plot_theoric(x1,'pd',theta=pi/2,phi=0,descript='Phase-Damping')
 a.plot_storaged('pd',False)
 plt.legend(loc=1)

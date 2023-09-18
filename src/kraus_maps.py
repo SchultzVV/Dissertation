@@ -67,9 +67,9 @@ class QuantumChannels(object):
 
     def rho_AB_pf(theta, phi, p):
         state = Matrix([[(sqrt(1-p)*cos(theta/2)),
-                        -(sqrt(p)*1j*sin(theta/2)),
-                        (sqrt(p)*1j*cos(theta/2) +sqrt(1-p)*exp(1j*phi)*sin(theta/2)),
-                        0]])
+                        +(sqrt(p)*cos(theta/2)),
+                        (sqrt(1-p)*exp(1j*phi)*sin(theta/2)),
+                        -sqrt(p)*exp(1j*phi)*sin(theta/2)]])
         return state
 
     def rho_AB_pd(theta, phi, p):

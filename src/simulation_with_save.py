@@ -366,7 +366,7 @@ class Simulate(object):
         if save:
             with open(f'data/noMarkov/{self.map_name}/coerencia_L_e_R.pkl', 'wb') as f:
                 pickle.dump(mylist, f)
-        # self.plot_theoric_map(theta, phi)
+        self.plot_theoric_map(theta, phi)
         self.plots_markov(self.list_p, self.coerencias_L, theta, phi)
 
     def rho_from_qc(self, best_params):
@@ -481,20 +481,24 @@ def main():
   
     n_qubits = 2
     d_rho_A = 2
-    list_p = np.linspace(0,100,21)
-    epochs = 120
+    theta = pi/2
+    phi = 0
+    list_p = np.linspace(0,1000,50)
+    markovianity = False
+    saving = True
+    epochs = 80
     step_to_start = 80
-    markovianity = True
-    rho_AB = QCH.rho_AB_pf
     
-    S = Simulate('pf', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
+    rho_AB = QCH.rho_AB_ad
+    S = Simulate('ad', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
     #rho = np.array(S.reload_rho('pd', markovianity))
     #S.plot_bloch(rho)
     #print(rho)
     #sys.exit()
-
-    S.run_calcs_noMarkov(True, pi/2, 0)
-    # S.run_calcs(True, pi/2, 0)
+    if markovianity:
+        S.run_calcs_noMarkov(saving, theta, phi)
+    if not markovianity:
+        S.run_calcs(saving, theta, phi)
     
     #phis = [0,pi,pi/1.5,pi/2,pi/3,pi/4,pi/5]
     #S.run_sequential_bf(phis)
