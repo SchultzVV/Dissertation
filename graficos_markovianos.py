@@ -13,8 +13,8 @@ list_of_maps = ['l']
 list_of_maps = ['ad','pd','adg','bf','bpf','d','l','hw']
 list_of_maps = ['ad','pd','adg','bf','pf','bpf','d']
 list_of_maps = ['ad']
-list_of_maps = ['ad','pd','bf','pf']
 list_of_maps = ['ad','pd','adg','bf','pf','bpf','d','l','hw']
+list_of_maps = ['ad','pd','bf','pf']
 th = pi/2
 ph = 0
 for map in list_of_maps:
@@ -22,7 +22,7 @@ for map in list_of_maps:
         ph = pi/2
     else:
         ph = 0
-    a.plot_theoric(list_1,map,theta=th,phi=ph,descript='Teórico Markoviano')
+    # a.plot_theoric(list_1,map,theta=th,phi=ph,descript='Teórico Markoviano')
     # a.plot_storaged(map,True)
     a.plot_theoric_n_Markov(list_2,map,theta=th,phi=ph,descript='Teórico não Markoviano')
     # a.plot_theoric_n_Markov_B(x1,map,theta=th,phi=ph,descript='Teórico não Markoviano')
