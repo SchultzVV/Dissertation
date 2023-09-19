@@ -244,24 +244,24 @@ class TheoricMaps():
             coh_l = self.read_data(path)[0]#.detach().numpy()
             if map_name == 'l':
             #    plt.plot(np.linspace(0,1.6,len(coh_l)),coh_l,label='Simulação '+map_name+' Makorv')
-               plt.scatter(np.linspace(0,1.6,len(coh_l)),coh_l,label='Simulação Markoviana')
+               plt.scatter(np.linspace(0, 1.6, len(coh_l)), coh_l, label='Simulação Markoviana')
             else:
-                plt.scatter(np.linspace(0,1,len(coh_l)),coh_l,label='Simulação Markoviana')
+                plt.scatter(np.linspace(0, 1, len(coh_l)), coh_l, label='Simulação Markoviana')
                 # plt.plot(np.linspace(0,1,len(coh_l)),coh_l,label=map_name)
         else:
             path = f'data/noMarkov/{map_name}/coerencia_L_e_R.pkl'
             coh_l = self.read_data(path)[0]#.detach().numpy()
             print(len(coh_l))
-            x2 = np.linspace(0.01,1000,len(coh_l))
+            x2 = np.linspace(0.01, 1000, len(coh_l))
             if map_name == 'l':
                 # plt.scatter(np.linspace(0,1.6,len(coh_l)),coh_l,label='Simulação N - Makorv')
-                plt.scatter(np.linspace(0.01,1000,len(coh_l)),coh_l,label='Simulação não Markoviana')
+                plt.scatter(np.linspace(0.01, 1000, len(coh_l)), coh_l, label='Simulação não Markoviana')
             else:
                 # plt.scatter(np.linspace(0,1,len(coh_l)),coh_l,label=map_name)
-                x2 = np.linspace(0,1000,len(coh_l))
-                xa = np.array([self.non_markov_t_Ana(0.01,i) for i in x2])
+                x2 = np.linspace(0, 1000, len(coh_l))
+                xa = np.array([self.non_markov_t_Ana(0.01, i) for i in x2])
                 # plt.plot(x2,coh_l)#,label=map_name+' N - Makorv')
-                plt.scatter(x2,coh_l,label='Simulação não Markoviana')
+                plt.scatter(x2, coh_l, label='Simulação não Markoviana',color='red')
                 # plt.scatter(xa,coh_l,label='Simulação não Markoviana')
                 # plt.xscale('log')
                 # plt.scatter(xa,coh_l,label=map_name+' N - Makorv')
@@ -343,7 +343,9 @@ class TheoricMaps():
     def plot_theoric_n_Markov(self, list_p, map_name, theta, phi, descript):
         cohs = []
         # x2 = np.linspace(0.01,1000,len(list_p))
-        xa = np.sort(np.array([self.non_markov_t_Ana(0.001,i) for i in list_p]))
+        # xa = np.sort(np.array([self.non_markov_t_Ana(0.001,i) for i in list_p]))
+        xa = np.array([self.non_markov_t_Ana(0.001,i) for i in list_p]) # mode sem ordenar
+        #xa = np.sort(np.array([self.non_markov_t_Ana(0.001,i) for i in list_p])) # mode ordenado
         # xa = np.array([self.non_markov_t_Ana(0.01,i) for i in x2])
         if map_name != 'l':
             xa = [i/max(xa) for i in xa]

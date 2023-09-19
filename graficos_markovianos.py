@@ -4,17 +4,17 @@ sys.path.append('src')
 from src.theoric_channels import *
 a = TheoricMaps()
 
-lamb = 0.01
+lamb = 0.2
 list_1 = np.linspace(0.01,1,21)
-list_2 = np.linspace(0.01,1000,21)
+list_2 = np.linspace(10,5000,1000)
 
 
-list_of_maps = ['bf','pf','l']
 list_of_maps = ['l']
 list_of_maps = ['ad','pd','adg','bf','bpf','d','l','hw']
 list_of_maps = ['ad','pd','adg','bf','pf','bpf','d']
-list_of_maps = ['pd','adg','bf','pf','bpf','d','l','hw']
 list_of_maps = ['ad']
+list_of_maps = ['ad','pd','bf','pf']
+list_of_maps = ['ad','pd','adg','bf','pf','bpf','d','l','hw']
 th = pi/2
 ph = 0
 for map in list_of_maps:
@@ -23,7 +23,7 @@ for map in list_of_maps:
     else:
         ph = 0
     a.plot_theoric(list_1,map,theta=th,phi=ph,descript='Teórico Markoviano')
-    a.plot_storaged(map,True)
+    # a.plot_storaged(map,True)
     a.plot_theoric_n_Markov(list_2,map,theta=th,phi=ph,descript='Teórico não Markoviano')
     # a.plot_theoric_n_Markov_B(x1,map,theta=th,phi=ph,descript='Teórico não Markoviano')
     a.plot_storaged(map,False)
@@ -34,7 +34,7 @@ for map in list_of_maps:
     plt.ylabel('coerência')
 
     plt.xscale('log')
-    plt.xlim(0.01)
+    # plt.xlim(0.01)
     plt.legend(loc=0)
     plt.show()
 sys.exit()    

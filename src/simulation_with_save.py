@@ -497,14 +497,14 @@ def main():
     d_rho_A = 2
     theta = pi/2
     phi = 0
-    list_p = np.linspace(0.1,1000,21)
+    list_p = np.linspace(0.1,5000,21)
     markovianity = False
     saving = True
-    epochs = 120
+    epochs = 200
     step_to_start = 80
     
-    rho_AB = QCH.rho_AB_ad
-    S = Simulate('ad', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
+    rho_AB = QCH.rho_AB_pf
+    S = Simulate('pf', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
     #rho = np.array(S.reload_rho('pd', markovianity))
     #S.plot_bloch(rho)
     #print(rho)
