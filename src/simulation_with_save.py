@@ -327,7 +327,7 @@ class Simulate(object):
                     print(len(self.list_p))
                     print(len(coerencias_L))
                     faltam = len(self.list_p)-len(coerencias_L)
-                    print('ainda faltam',faltam)
+                    print('ainda faltam', faltam)
                     self.list_p = self.list_p[len(coerencias_L):]
                     print(len(self.list_p))
             except:
@@ -343,9 +343,10 @@ class Simulate(object):
         print('list_t = ', self.list_p)
         pretrain = True
         count = 0
-        _, params, _, _ = self.start_things(self.depht)
+        # _, params, _, _ = self.start_things(self.depht)
         
         for p in self.list_p:
+            _, params, _, _ = self.start_things(self.depht)
             print(f'{count} de {len(self.list_p)}')
             count += 1
             circuit, _ = self.general_vqacircuit_penny(params, self.n_qubits, self.depht)
@@ -497,14 +498,14 @@ def main():
     d_rho_A = 2
     theta = pi/2
     phi = pi/2
-    list_p = np.linspace(0.1,5000,50)
+    list_p = np.linspace(1000,2000,20)
     markovianity = False
     saving = True
-    epochs = 250
+    epochs = 120
     step_to_start = 100
     
-    rho_AB = QCH.rho_AB_bf
-    S = Simulate('bf', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
+    rho_AB = QCH.rho_AB_ad
+    S = Simulate('ad', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
     #rho = np.array(S.reload_rho('pd', markovianity))
     #S.plot_bloch(rho)
     #print(rho)

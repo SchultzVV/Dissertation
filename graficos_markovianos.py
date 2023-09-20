@@ -6,7 +6,7 @@ a = TheoricMaps()
 
 lamb = 0.2
 list_1 = np.linspace(0.01,1,21)
-list_2 = np.linspace(10,5000,1000)
+list_2 = np.linspace(10,5000,10000)
 
 
 list_of_maps = ['l']
@@ -26,7 +26,7 @@ for map in list_of_maps:
     # a.plot_storaged(map,True)
     a.plot_theoric_n_Markov(list_2,map,theta=th,phi=ph,descript='Teórico não Markoviano')
     # a.plot_theoric_n_Markov_B(x1,map,theta=th,phi=ph,descript='Teórico não Markoviano')
-    a.plot_storaged(map,False)
+    # a.plot_storaged(map,False)
     if map == 'l':
         plt.xlabel(fr'$\xi$ ; t (n-Markov)')
     else:
