@@ -236,7 +236,7 @@ class TheoricMaps():
         return state
     
 
-    def plot_storaged(self, map_name, markovianity):
+    def plot_storaged(self, map_name, x2, markovianity):
         #path = f'../data/{map}/{map}-coherences.pkl'
         if markovianity:
             print(markovianity)
@@ -259,8 +259,8 @@ class TheoricMaps():
             else:
                 # plt.scatter(np.linspace(0,1,len(coh_l)),coh_l,label=map_name)
                 x2 = np.linspace(0, 1000, len(coh_l))
-                xa = np.array([self.non_markov_t_Ana(0.01, i) for i in x2])
-                # plt.plot(x2,coh_l)#,label=map_name+' N - Makorv')
+                xa = np.array([self.non_markov_t_Ana(0.001, i) for i in x2])
+                plt.plot(x2,coh_l, label=map_name+' N - Makorv')
                 plt.scatter(x2, coh_l, label='Simulação não Markoviana',color='red')
                 # plt.scatter(xa,coh_l,label='Simulação não Markoviana')
                 # plt.xscale('log')
@@ -340,13 +340,13 @@ class TheoricMaps():
         plt.plot(list_p,cohs,label=descript)
         plt.title(m)
 
-    def plot_theoric_n_Markov(self, list_p, map_name, theta, phi, descript):
+    def plot_theoric_n_Markov(self, list_p, map_name, theta, phi, lambd, descript):
         cohs = []
         # x2 = np.linspace(0.01,1000,len(list_p))
-        xa = np.sort(np.array([self.non_markov_t_Ana(0.001,i) for i in list_p]))
-        # xa = np.array([self.non_markov_t_Ana(0.001,i) for i in list_p]) # mode sem ordenar
-        # xa = np.sort(np.array([self.non_markov_t_Ana(0.001,i) for i in list_p])) # mode ordenado
-        # xa = np.array([self.non_markov_t_Ana(0.01,i) for i in x2])
+        xa = np.sort(np.array([self.non_markov_t_Ana(lambd, i) for i in list_p]))
+        # xa = np.array([self.non_markov_t_Ana(lambd, i) for i in list_p]) # mode sem ordenar
+        # xa = np.sort(np.array([self.non_markov_t_Ana(lambd, i) for i in list_p])) # mode ordenado
+        # xa = np.array([self.non_markov_t_Ana(lambd, i) for i in x2])
         if map_name != 'l':
             xa = [i/max(xa) for i in xa]
         for pp in xa:
@@ -359,9 +359,10 @@ class TheoricMaps():
         mpl.rcParams['text.usetex'] = True
         th = f'{str(theta)[0:4]}'
         fi = f'{str(phi)[0:4]}'
+        lamb_info = r"$\lambda = $"+str(lambd)
         fancy_name = self.name_changer(map_name)
         psi = fr'$|\psi({th},{fi})\rangle$.'
-        m = r"Estado inicial $|\psi(\theta,\phi)\rangle =$ " + psi
+        m = r"Estado inicial $|\psi(\theta,\phi)\rangle = $ " + psi
         if map_name == 'hw':
             #psi = fr'$\frac(|0\rangle+|1\rangle+|2\rangle\psi({th},{fi})\rangle)$.'
             # m0 = r"Estado inicial (bpf) $|\psi(\theta,\phi)\rangle = |\psi(\pi/2,\pi/2)\rangle, $"
@@ -379,8 +380,54 @@ class TheoricMaps():
         plt.ylabel('coerência')
         # plt.scatter(list_p,cohs,label=descript)
         # plt.scatter(x2, cohs, label=descript)
-        plt.plot(list_p, cohs, label=descript)
+        plt.plot(list_p, cohs, label=descript+lamb_info)
         plt.title(m)
+
+    def theoric_plot(self, list_p, map_name, theta, phi, lambd, descript, Markovianity):
+        cohs = []
+        # x2 = np.linspace(0.01,1000,len(list_p))
+        if Markovianity:
+            xa = np.sort(np.array([self.non_markov_t_Ana(lambd, i) for i in list_p]))
+        else:
+            xa = np.array([self.non_markov_t_Ana(lambd, i) for i in list_p]) # mode sem ordenar
+        # xa = np.sort(np.array([self.non_markov_t_Ana(lambd, i) for i in list_p])) # mode ordenado
+        # xa = np.array([self.non_markov_t_Ana(lambd, i) for i in x2])
+        if map_name != 'l':
+            xa = [i/max(xa) for i in xa]
+        for pp in xa:
+            rho = self.map_choser(map_name)(theta,phi,pp)
+            rho_numpy = np.array(rho.tolist(), dtype=np.complex64)
+            coh = self.coh_l1(rho_numpy)
+            # print(coh)
+            cohs.append(coh)
+        #m = f'Estado inicial, theta =  {str(theta)[0:4]}, phi = {str(phi)[0:4]}'
+        mpl.rcParams['text.usetex'] = True
+        th = f'{str(theta)[0:4]}'
+        fi = f'{str(phi)[0:4]}'
+        lamb_info = r"$\lambda = $"+str(lambd)
+        fancy_name = self.name_changer(map_name)
+        psi = fr'$|\psi({th},{fi})\rangle$.'
+        m = r"Estado inicial $|\psi(\theta,\phi)\rangle = $ " + psi
+        if map_name == 'hw':
+            #psi = fr'$\frac(|0\rangle+|1\rangle+|2\rangle\psi({th},{fi})\rangle)$.'
+            # m0 = r"Estado inicial (bpf) $|\psi(\theta,\phi)\rangle = |\psi(\pi/2,\pi/2)\rangle, $"
+            # m1 = r"Estado inicial (bf - pf) $|\psi(\theta,\phi)\rangle =$ " + psi
+            # m2 = r"estado inicial (hw) $|\psi\rangle = \frac{1}{\sqrt{3}}(|0\rangle+|1\rangle+|2\rangle)$"
+            # m = m0+m2
+            # plt.suptitle(m1)
+            m = r"Estado inicial $|\psi\rangle = \frac{1}{\sqrt{3}}(|0\rangle+|1\rangle+|2\rangle)$ "
+        plt.suptitle(fancy_name)
+        plt.title(m,usetex=True)
+        if map_name == 'l':
+            plt.xlabel(fr'$\xi$')
+        else:
+            plt.xlabel('p')
+        plt.ylabel('coerência')
+        # plt.scatter(list_p,cohs,label=descript)
+        # plt.scatter(x2, cohs, label=descript)
+        plt.plot(list_p, cohs, label=descript+lamb_info)
+        plt.title(m)
+
 
     def plot_theoric_n_Markov_B(self, list_p, map_name, theta, phi, descript):
         # if map_name == 'l':

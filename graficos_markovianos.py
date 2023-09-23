@@ -6,36 +6,51 @@ a = TheoricMaps()
 
 lamb = 0.2
 list_1 = np.linspace(0.01,1,21)
-list_2 = np.linspace(10,5000,10000)
+list_2 = np.linspace(0,20000,1000)
+x2 = np.linspace(50,1000,10)
 
+#x2 = np.linspace(0, 1000, len(coh_l))
 
 list_of_maps = ['l']
 list_of_maps = ['ad','pd','adg','bf','bpf','d','l','hw']
-list_of_maps = ['ad','pd','adg','bf','pf','bpf','d']
-list_of_maps = ['ad']
 list_of_maps = ['ad','pd','adg','bf','pf','bpf','d','l','hw']
+list_of_maps = ['pd']
+list_of_maps = ['ad','pd','adg','bf','pf','bpf','d']
 list_of_maps = ['ad','pd','bf','pf']
+list_of_lambs = [0,0.0003,0.0009, 0.003, 0.009, 0.03, 0.09, 0.3 ,0.9]
+list_of_lambs = [0,0.0003,0.003,0.03, 0.3]
 th = pi/2
 ph = 0
+# lambd = 0.01
 for map in list_of_maps:
     if map == 'bf':
         ph = pi/2
     else:
         ph = 0
-    # a.plot_theoric(list_1,map,theta=th,phi=ph,descript='Teórico Markoviano')
-    # a.plot_storaged(map,True)
-    a.plot_theoric_n_Markov(list_2,map,theta=th,phi=ph,descript='Teórico não Markoviano')
-    # a.plot_theoric_n_Markov_B(x1,map,theta=th,phi=ph,descript='Teórico não Markoviano')
-    # a.plot_storaged(map,False)
-    if map == 'l':
-        plt.xlabel(fr'$\xi$ ; t (n-Markov)')
-    else:
-        plt.xlabel('p (Markov) ; t (n-Markov)')
-    plt.ylabel('coerência')
+    for lambd in list_of_lambs:
+        # lambd = 0.1
+        # a.plot_theoric(list_1,map,theta=th,phi=ph,descript='Markoviano')
+        # a.plot_storaged(map,True)
+        a.theoric_plot(list_2, map, theta=th, phi=ph,lambd=lambd, descript=' ', Markovianity=True)
+        a.theoric_plot(list_2, map, theta=th, phi=ph,lambd=lambd, descript=' ', Markovianity=False)
 
-    plt.xscale('log')
-    # plt.xlim(0.01)
-    plt.legend(loc=0)
+        # a.plot_theoric_n_Markov(list_2, map, theta=th, phi=ph,lambd=lambd, descript=' ')
+        # lambd = 0.01
+        # a.plot_theoric_n_Markov(list_2, map, theta=th, phi=ph,lambd=lambd, descript=' ')
+        # lambd = 0.0001
+        # a.plot_theoric_n_Markov(list_2, map, theta=th, phi=ph,lambd=lambd, descript=' ')
+        # a.plot_theoric_n_Markov_B(x1,map,theta=th,phi=ph,descript='Teórico não Markoviano')
+        # a.plot_storaged(map, x2, False)
+        if map == 'l':
+            plt.xlabel(fr'$\xi$ ; t (n-Markov)')
+        else:
+            plt.xlabel('p (Markov) ; t (n-Markov)')
+        plt.ylabel('coerência')
+        # plt.xlabel('t')
+
+        plt.xscale('log')
+        # plt.xlim(0.01)
+        plt.legend()
     plt.show()
 sys.exit()    
 

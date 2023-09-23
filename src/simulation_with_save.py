@@ -319,6 +319,7 @@ class Simulate(object):
     
     def run_calcs_noMarkov(self, save, theta, phi, continuous_coh):#, gamma=None):
         #coerencias_R = []
+        print(self.map_name)
         caminho = f'data/noMarkov/{self.map_name}/coerencia_L_e_R.pkl'
         if continuous_coh:
             try:
@@ -343,11 +344,11 @@ class Simulate(object):
         print('list_t = ', self.list_p)
         pretrain = True
         count = 0
-        # _, params, _, _ = self.start_things(self.depht)
+        _, params, _, _ = self.start_things(self.depht)
         
         for p in self.list_p:
-            _, params, _, _ = self.start_things(self.depht)
-            print(f'{count} de {len(self.list_p)}')
+            # _, params, _, _ = self.start_things(self.depht)
+            print(f'Canal de {self.map_name}, p = {count}, de {len(self.list_p)}')
             count += 1
             circuit, _ = self.general_vqacircuit_penny(params, self.n_qubits, self.depht)
 
@@ -381,8 +382,9 @@ class Simulate(object):
             if save:
                 with open(caminho, 'wb') as f:
                     pickle.dump(mylist, f)
-        self.plot_theoric_map(theta, phi)
+        # self.plot_theoric_map(theta, phi)
         self.plots_markov(self.list_p, self.coerencias_L, theta, phi)
+        print('Deu, acabou.')
 
     def rho_from_qc(self, best_params):
         params = best_params.clone().detach().numpy()
@@ -497,21 +499,21 @@ def main():
     n_qubits = 2
     d_rho_A = 2
     theta = pi/2
-    phi = pi/2
-    list_p = np.linspace(1000,2000,20)
+    phi = 0
+    list_p = np.linspace(1000,5000,3)
     markovianity = False
     saving = True
     epochs = 120
-    step_to_start = 100
+    step_to_start = 1
     
-    rho_AB = QCH.rho_AB_ad
-    S = Simulate('ad', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
+    rho_AB = QCH.rho_AB_pf
+    S = Simulate('pf', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
     #rho = np.array(S.reload_rho('pd', markovianity))
     #S.plot_bloch(rho)
     #print(rho)
     #sys.exit()
     if not markovianity:
-        S.run_calcs_noMarkov(saving, theta, phi, False)
+        S.run_calcs_noMarkov(saving, theta, phi, True)
     if markovianity:
         S.run_calcs(saving, theta, phi)
     
