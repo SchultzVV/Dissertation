@@ -171,6 +171,24 @@ class Simulate(object):
                     qc.cnot(i,i+1)
         return qc, qr
 
+    def prepare_optmize(self, epochs, n_qubits, circuit, params, target_op, pretrain, step_to_start,theta, phi):
+        for i in range(epochs):
+
+            for p in self.list_p:
+                # _, params, _, _ = self.start_things(self.depht)
+                print(f'Canal de {self.map_name}, p = {count}, de {len(self.list_p)}')
+                count += 1
+                circuit, _ = self.general_vqacircuit_penny(params, self.n_qubits, self.depht)
+
+                # defina o estado a ser preparado abaixo
+                #------------------------------------------------------------
+                target_op = QCH.get_target_op(self.prepare_rho(theta, phi, p))
+                #------------------------------------------------------------
+
+                # self.qc, self.qr, params, f = self.prepare_optmize(self.epochs, self.n_qubits, circuit, params, target_op, pretrain, self.step_to_start)
+
+                self.qc, self.qr, params, f = self.optmize(1, n_qubits, circuit, params, target_op, pretrain, step_to_start)
+
     def optmize(self, epochs, n_qubits, circuit, params, target_op, pretrain, pretrain_steps):
         best_params, f = self.train(epochs, circuit, params, target_op, pretrain, pretrain_steps)
         parametros = best_params.clone().detach().numpy()
@@ -320,7 +338,7 @@ class Simulate(object):
     def run_calcs_noMarkov(self, save, theta, phi, continuous_coh):#, gamma=None):
         #coerencias_R = []
         print(self.map_name)
-        caminho = f'data/noMarkov/{self.map_name}/coerencia_L_e_R.pkl'
+        caminho = f'data/noMarkov/{self.map_name}/coerencia_L_e_R__list_t.pkl'
         if continuous_coh:
             try:
                 coerencias_L = self.read_data(caminho)[0]
@@ -345,7 +363,8 @@ class Simulate(object):
         pretrain = True
         count = 0
         _, params, _, _ = self.start_things(self.depht)
-        
+        # self.qc, self.qr, params, f = self.prepare_optmize(80, self.n_qubits, circuit, params, target_op, pretrain, self.step_to_start,theta, phi)
+
         for p in self.list_p:
             # _, params, _, _ = self.start_things(self.depht)
             print(f'Canal de {self.map_name}, p = {count}, de {len(self.list_p)}')
@@ -356,6 +375,7 @@ class Simulate(object):
             #------------------------------------------------------------
             target_op = QCH.get_target_op(self.prepare_rho(theta, phi, p))
             #------------------------------------------------------------
+            
 
             self.qc, self.qr, params, f = self.optmize(self.epochs, self.n_qubits, circuit, params, target_op, pretrain, self.step_to_start)
             pretrain = False
@@ -378,7 +398,7 @@ class Simulate(object):
             rho = self.tomograph()
             #print(rho)
             self.coerencias_L, self.coerencias_R = self.results(rho, self.coerencias_R, coerencias_L)
-            mylist = [self.coerencias_L, self.coerencias_R]
+            mylist = [self.coerencias_L, self.coerencias_R, self.list_p]
             if save:
                 with open(caminho, 'wb') as f:
                     pickle.dump(mylist, f)
@@ -500,12 +520,12 @@ def main():
     d_rho_A = 2
     theta = pi/2
     phi = 0
-    list_p = np.linspace(1000,5000,3)
+    list_p = np.linspace(0.01,100,21)
     markovianity = False
     saving = True
-    epochs = 120
-    step_to_start = 1
-    
+    epochs = 60
+    step_to_start = 80
+    append_data = False
     rho_AB = QCH.rho_AB_pf
     S = Simulate('pf', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
     #rho = np.array(S.reload_rho('pd', markovianity))
@@ -513,7 +533,7 @@ def main():
     #print(rho)
     #sys.exit()
     if not markovianity:
-        S.run_calcs_noMarkov(saving, theta, phi, True)
+        S.run_calcs_noMarkov(saving, theta, phi, append_data)
     if markovianity:
         S.run_calcs(saving, theta, phi)
     
