@@ -525,9 +525,9 @@ def main():
     saving = True
     epochs = 60
     step_to_start = 80
-    append_data = False
-    rho_AB = QCH.rho_AB_pf
-    S = Simulate('pf', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
+    append_data = True
+    rho_AB = QCH.rho_AB_ad
+    S = Simulate('ad', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
     #rho = np.array(S.reload_rho('pd', markovianity))
     #S.plot_bloch(rho)
     #print(rho)

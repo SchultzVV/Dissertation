@@ -7,8 +7,8 @@ a = TheoricMaps()
 lamb = 0.01
 # list_p = np.linspace(0.01,1.6,2001)
 # list_p = np.linspace(0.01,2000,2000)# usa esse
-list_theoric = np.linspace(0.01,3000,2000)# será?
-list_p = np.linspace(0.01,3000,21)# será?
+list_theoric = np.linspace(0,100,21)# será?
+list_p = np.linspace(0,100,21)# será?
 # list_t = np.linspace(0,2000,10)
 list_t = np.array([a.non_markov_t_Ana(lamb, i) for i in list_p])
 # x2 = np.linspace(50,1000,1000)
@@ -22,7 +22,7 @@ list_of_maps = ['pd']
 list_of_maps = ['ad','pd','adg','bf','pf','bpf','d']
 list_of_lambs = [0,0.0003,0.003,0.03, 0.3]
 list_of_maps = ['ad']
-list_of_maps = ['ad','pf']#,'bf','pf']
+list_of_maps = ['pf','ad']#,'bf','pf']
 list_of_lambs = [0,0.0003,0.0009, 0.003, 0.009, 0.03, 0.09, 0.3 ,0.9]
 list_of_lambs = [0.01]
 th = pi/2
@@ -33,12 +33,12 @@ for map in list_of_maps:
         ph = pi/2
     else:
         ph = 0
-    a.plot_theoric(list_t,map,theta=th,phi=ph,descript='plot_theoric')
+    # a.plot_theoric(list_t,map,theta=th,phi=ph,descript='plot_theoric')
     
     # a.theoric_plot(list_p, map, theta=th, phi=ph, lambd=lamb, descript='', Markovianity=False)
     #a.theoric_plot(list_p, map, theta=th, phi=ph, lambd=1, descript='', Markovianity=False)
     #a.theoric_plot(list_p, map, theta=th, phi=ph, lambd=0.1, descript='', Markovianity=False)
-    #a.theoric_plot(list_p, map, theta=th, phi=ph, lambd=0.01, descript='', Markovianity=False)
+    a.theoric_plot(list_theoric, map, theta=th, phi=ph, lambd=0.01, descript='', Markovianity=False)
     # a.theoric_plot(list_p, map, theta=th, phi=ph, lambd=0, descript='', Markovianity=False)
     # a.plot_theoric_n_Markov(list_t, map, theta=th, phi=ph,lambd=0.01, descript='plot_theoric_n_Markov')
 

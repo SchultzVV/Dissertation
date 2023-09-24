@@ -250,11 +250,11 @@ class TheoricMaps():
                 plt.scatter(np.linspace(0, 1, len(coh_l)), coh_l, label='Simulação Markoviana')
                 # plt.plot(np.linspace(0,1,len(coh_l)),coh_l,label=map_name)
         else:
-            # path = f'data/noMarkov_good/{map_name}/coerencia_L_e_R.pkl'
-            path = f'data/noMarkov/{map_name}/coerencia_L_e_R__list_t.pkl'
+            path = f'data/noMarkov_good/{map_name}/coerencia_L_e_R.pkl'
+            # path = f'data/noMarkov/{map_name}/coerencia_L_e_R__list_t.pkl'
             x2 = np.array([self.non_markov_t_Ana(lambd, i) for i in list_p])
             coh_l = self.read_data(path)[0]#.detach().numpy()
-            print(self.read_data(path))
+            #print(self.read_data(path))
             print(len(coh_l))
             #x2 = np.linspace(0.01, 1000, len(coh_l))
             if map_name == 'l':
@@ -264,8 +264,8 @@ class TheoricMaps():
                 # plt.scatter(np.linspace(0,1,len(coh_l)),coh_l,label=map_name)
                 # x2 = np.linspace(0, 1000, len(coh_l))
                 # xa = np.array([self.non_markov_t_Ana(0.001, i) for i in x2])
-                # plt.plot(x2,coh_l, label=map_name)#+' N - Makorv')
-                plt.scatter(x2, coh_l, label=map_name,color='red')
+                plt.plot(list_p,coh_l, label=map_name)#+' N - Makorv')
+                plt.scatter(list_p, coh_l, label=map_name,color='red')
                 # plt.scatter(xa,coh_l,label='Simulação não Markoviana')
                 # plt.xscale('log')
                 # plt.scatter(xa,coh_l,label=map_name+' N - Makorv')
