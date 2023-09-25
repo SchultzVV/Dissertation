@@ -264,7 +264,7 @@ class TheoricMaps():
                 # plt.scatter(np.linspace(0,1,len(coh_l)),coh_l,label=map_name)
                 # x2 = np.linspace(0, 1000, len(coh_l))
                 # xa = np.array([self.non_markov_t_Ana(0.001, i) for i in x2])
-                plt.plot(list_p,coh_l, label=map_name)#+' N - Makorv')
+                plt.plot(list_p,coh_l)#, label=map_name)#+' N - Makorv')
                 plt.scatter(list_p, coh_l, label=map_name,color='red')
                 # plt.scatter(xa,coh_l,label='Simulação não Markoviana')
                 # plt.xscale('log')
