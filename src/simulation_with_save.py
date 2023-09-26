@@ -520,12 +520,12 @@ def main():
     d_rho_A = 2
     theta = pi/2
     phi = 0
-    list_p = np.linspace(0.01,100,21)
+    list_p = np.linspace(0.01,1000,21)
     markovianity = False
     saving = True
     epochs = 60
     step_to_start = 80
-    append_data = True
+    append_data = False
     rho_AB = QCH.rho_AB_ad
     S = Simulate('ad', n_qubits, d_rho_A, list_p, epochs, step_to_start, rho_AB)
     #rho = np.array(S.reload_rho('pd', markovianity))

@@ -250,7 +250,7 @@ class TheoricMaps():
                 plt.scatter(np.linspace(0, 1, len(coh_l)), coh_l, label='Simulação Markoviana')
                 # plt.plot(np.linspace(0,1,len(coh_l)),coh_l,label=map_name)
         else:
-            path = f'data/noMarkov_good/{map_name}/coerencia_L_e_R.pkl'
+            path = f'data/noMarkov/{map_name}/coerencia_L_e_R.pkl'
             # path = f'data/noMarkov/{map_name}/coerencia_L_e_R__list_t.pkl'
             x2 = np.array([self.non_markov_t_Ana(lambd, i) for i in list_p])
             coh_l = self.read_data(path)[0]#.detach().numpy()
